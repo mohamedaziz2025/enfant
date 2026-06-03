@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stories & Tales | Southern Tunisia Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>tailwind.config={theme:{extend:{fontFamily:{nunito:['Nunito','sans-serif']},colors:{tunisRed:'#E10600',skyBlue:'#38BDF8',sunnyYellow:'#FBBF24',jungleGreen:'#34D399'},animation:{'bounce-slow':'bounce 3s infinite','pulse-slow':'pulse 4s cubic-bezier(0.4,0,0.6,1) infinite'},keyframes:{wiggle:{'0%,100%':{transform:'rotate(-3deg)'},'50%':{transform:'rotate(3deg)'}}}}}}
+    </script>
+    <style>
+        body{font-family:'Nunito',sans-serif;background:#FFF8F0}
+        ::-webkit-scrollbar{width:10px}::-webkit-scrollbar-thumb{background:#F97316;border-radius:5px}
+        .confetti{position:fixed;width:10px;height:10px;border-radius:50%;pointer-events:none}
+        @keyframes confettiFall{0%{transform:translateY(-50px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(360deg);opacity:0}}
+        .custom-toast{animation:slideUp .3s ease}
+        @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+        .nav-scroll{overflow-x:auto;scrollbar-width:none}
+        .nav-scroll::-webkit-scrollbar{display:none}
+        .story-page{display:none}
+        .story-page.active-page{display:block;animation:pageFlip .35s ease}
+        @keyframes pageFlip{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+        .story-card{transition:transform .3s ease,box-shadow .3s ease}
+        .story-card:hover{transform:translateY(-5px);box-shadow:0 12px 30px rgba(0,0,0,.12)}
+    </style>
+</head>
+<body class="overflow-x-hidden text-slate-800">
+
+<!-- AVATAR MODAL -->
+<div id="avatar-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 max-w-2xl w-full border-8 border-yellow-400 shadow-2xl relative overflow-y-auto max-h-[90vh]">
+        <h2 class="text-2xl font-black text-center text-slate-900 mb-4">Choose Your Companion 🏜️</h2>
+        <div class="mb-5"><input type="text" id="avatar-input-name" class="w-full px-4 py-3 rounded-xl border-4 border-sky-400 text-lg font-bold outline-none focus:border-yellow-400 transition" placeholder="Write your name..."></div>
+        <div class="grid grid-cols-4 gap-3 mb-6">
+            <div onclick="selectAvatarOption('hannibal')" id="opt-hannibal" class="avatar-option border-4 border-slate-200 rounded-2xl p-3 cursor-pointer text-center hover:bg-sky-50 transition"><div class="text-4xl mb-1">🛡️</div><div class="font-black text-xs">Hannibal</div></div>
+            <div onclick="selectAvatarOption('jasmine')"  id="opt-jasmine"  class="avatar-option border-4 border-slate-200 rounded-2xl p-3 cursor-pointer text-center hover:bg-sky-50 transition"><div class="text-4xl mb-1">🌸</div><div class="font-black text-xs">Jasmine</div></div>
+            <div onclick="selectAvatarOption('fennec')"   id="opt-fennec"   class="avatar-option border-4 border-slate-200 rounded-2xl p-3 cursor-pointer text-center hover:bg-sky-50 transition"><div class="text-4xl mb-1">🦊</div><div class="font-black text-xs">Fennec</div></div>
+            <div onclick="selectAvatarOption('sailor')"   id="opt-sailor"   class="avatar-option border-4 border-slate-200 rounded-2xl p-3 cursor-pointer text-center hover:bg-sky-50 transition"><div class="text-4xl mb-1">⛵</div><div class="font-black text-xs">Sailor</div></div>
+        </div>
+        <div class="flex justify-center"><button onclick="confirmAvatarSelection()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xl px-10 py-3 rounded-2xl shadow-lg border-b-4 border-emerald-700 transition">Let's Go! 🚀</button></div>
+    </div>
+</div>
+
+<!-- HEADER -->
+<header class="bg-gradient-to-b from-amber-500 to-orange-400 pb-6 relative overflow-hidden shadow-lg border-b-4 border-dashed border-amber-400">
+    <div class="absolute top-4 right-6 text-white text-4xl opacity-40 animate-bounce-slow">☀️</div>
+    <div class="container mx-auto px-4 pt-4 flex flex-col md:flex-row justify-between items-center relative z-10">
+        <a href="index.html" class="flex items-center gap-3">
+            <div class="bg-white p-3 rounded-full shadow-md border-4 border-yellow-400 hover:scale-110 transition"><span class="text-3xl">🏜️</span></div>
+            <div><h1 class="text-2xl font-black text-white drop-shadow">Southern Tunisia Explorer</h1>
+            <p class="text-sm font-bold text-amber-100">Discover the Desert South 🌍</p></div>
+        </a>
+        <div class="flex flex-wrap items-center justify-center gap-3 mt-4 md:mt-0">
+            <div class="bg-amber-100 border-2 border-amber-400 px-4 py-2 rounded-full flex items-center gap-2 shadow-inner"><span class="text-xl">⭐</span><div><div class="text-xs text-amber-800 font-bold">Points</div><div class="text-lg font-black text-amber-600" id="header-points">0</div></div></div>
+            <div id="level-badge" class="border-2 px-3 py-1 rounded-full text-xs font-black shadow">🌱 Beginner Explorer</div>
+            <div id="avatar-status" class="bg-white border-2 border-teal-400 px-4 py-1 rounded-full flex items-center gap-2 shadow cursor-pointer" onclick="openAvatarSelector()"></div>
+            <button onclick="resetAdventure()" class="text-xs bg-red-100 hover:bg-red-200 text-red-700 px-2.5 py-1.5 rounded-lg border border-red-300 font-bold transition"><i class="fas fa-redo-alt mr-1"></i> Reset</button>
+        </div>
+    </div>
+    <nav class="container mx-auto px-4 mt-5 relative z-10">
+        <div class="nav-scroll">
+            <div class="flex gap-2 justify-start md:justify-center bg-white/80 p-2 rounded-2xl shadow border-2 border-white min-w-max md:mx-auto">
+                <a id="nav-home"     href="index.html"     class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">🏠 Home</a>
+                <a id="nav-discover" href="decouvrir.html" class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">🧭 Discover</a>
+                <a id="nav-stories"  href="histoires.html" class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">📖 Stories</a>
+                <a id="nav-play"     href="jeux.html"      class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">🎮 Play</a>
+                <a id="nav-cuisine"  href="cuisine.html"   class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">🍲 Cuisine</a>
+                <a id="nav-parents"  href="parents.html"   class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">👪 Parents</a>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<main class="container mx-auto px-4 py-8 max-w-5xl space-y-10">
+    <div class="text-center space-y-2">
+        <span class="text-5xl">📖</span>
+        <h2 class="text-3xl font-black text-slate-900">Desert Stories & Tales</h2>
+        <p class="text-slate-600 font-bold">Choose a story and read it page by page, then collect your achievement points!</p>
+    </div>
+
+    <!-- STORY SELECTION CARDS -->
+    <div id="story-selection" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <div onclick="openStory('zara')" class="story-card bg-white rounded-3xl overflow-hidden shadow-md border-4 border-teal-300 cursor-pointer group">
+            <div class="h-44 overflow-hidden"><img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Tunisia-4073_-_Tamerza_Oasis_%287849982218%29.jpg" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="Zara" onerror="this.src='https://placehold.co/600x400/f0fdfa/0f766e?text=Zara'"></div>
+            <div class="p-5 space-y-2">
+                <div class="flex items-center gap-2"><span class="text-3xl">💧</span><span class="bg-teal-100 text-teal-700 text-xs font-black px-3 py-1 rounded-full">Story One</span></div>
+                <h3 class="text-lg font-black text-slate-900">Zara and the Secret Oasis</h3>
+                <p class="text-sm text-slate-500 font-bold">Brave girl Zara discovers a magical hidden waterfall deep in the desert mountains near Tamerza!</p>
+                <div class="flex items-center justify-between mt-2">
+                    <span class="text-xs text-purple-600 font-black bg-purple-100 px-2 py-1 rounded-full">5 pages</span>
+                    <span class="text-xs text-amber-600 font-black">+20 points ⭐</span>
+                </div>
+            </div>
+        </div>
+
+        <div onclick="openStory('fennec')" class="story-card bg-white rounded-3xl overflow-hidden shadow-md border-4 border-amber-300 cursor-pointer group">
+            <div class="h-44 overflow-hidden"><img src="https://upload.wikimedia.org/wikipedia/commons/c/cd/On_the_camel%2C_Douz%2C_Tunisia%2C_oct_2010_-_panoramio.jpg" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="Fennec" onerror="this.src='https://placehold.co/600x400/fef3c7/b45309?text=Fennec'"></div>
+            <div class="p-5 space-y-2">
+                <div class="flex items-center gap-2"><span class="text-3xl">🦊</span><span class="bg-amber-100 text-amber-700 text-xs font-black px-3 py-1 rounded-full">Story Two</span></div>
+                <h3 class="text-lg font-black text-slate-900">Foufou the Fennec's Big Adventure</h3>
+                <p class="text-sm text-slate-500 font-bold">Little Foufou the Fennec Fox sets off on a thrilling adventure across the golden Sahara dunes!</p>
+                <div class="flex items-center justify-between mt-2">
+                    <span class="text-xs text-purple-600 font-black bg-purple-100 px-2 py-1 rounded-full">4 pages</span>
+                    <span class="text-xs text-amber-600 font-black">+20 points ⭐</span>
+                </div>
+            </div>
+        </div>
+
+        <div onclick="openStory('ksar')" class="story-card bg-white rounded-3xl overflow-hidden shadow-md border-4 border-rose-300 cursor-pointer group">
+            <div class="h-44 overflow-hidden"><img src="https://upload.wikimedia.org/wikipedia/commons/a/ad/Ksar-ouled-soltane.jpg" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="Ksar" onerror="this.src='https://placehold.co/600x400/fee2e2/9f1239?text=Ksar'"></div>
+            <div class="p-5 space-y-2">
+                <div class="flex items-center gap-2"><span class="text-3xl">🏰</span><span class="bg-rose-100 text-rose-700 text-xs font-black px-3 py-1 rounded-full">Story Three</span></div>
+                <h3 class="text-lg font-black text-slate-900">Zied and the Ancient Ksar</h3>
+                <p class="text-sm text-slate-500 font-bold">Young explorer Zied visits the legendary Ksar Ouled Soltane and uncovers its 600-year-old secrets!</p>
+                <div class="flex items-center justify-between mt-2">
+                    <span class="text-xs text-purple-600 font-black bg-purple-100 px-2 py-1 rounded-full">5 pages</span>
+                    <span class="text-xs text-amber-600 font-black">+20 points ⭐</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STORY READER -->
+    <div id="story-reader" class="hidden bg-white rounded-3xl shadow-xl border-4 border-purple-200 overflow-hidden">
+
+        <!-- Reader Header -->
+        <div class="bg-gradient-to-r from-amber-500 to-orange-500 p-4 flex items-center justify-between text-white">
+            <button onclick="closeStory()" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-xl font-black text-sm transition">
+                ← Back to Stories
+            </button>
+            <h3 id="story-reader-title" class="font-black text-lg">Story Title</h3>
+            <span id="story-page-counter" class="bg-white/20 px-3 py-1 rounded-full text-xs font-black">1 / 5</span>
+        </div>
+
+        <!-- Page Display -->
+        <div class="p-6 md:p-10 min-h-[400px] flex flex-col justify-between">
+            <div id="story-pages-container" class="flex-1 space-y-6"></div>
+
+            <!-- Navigation -->
+            <div class="flex justify-between items-center mt-8 pt-4 border-t-2 border-dashed border-slate-200">
+                <button onclick="prevStoryPage()" id="btn-prev-page" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-black px-6 py-3 rounded-2xl transition border-2 border-slate-200 disabled:opacity-30" disabled>
+                    <i class="fas fa-arrow-left mr-1"></i> Previous
+                </button>
+                <div id="story-dots" class="flex gap-2"></div>
+                <button onclick="nextStoryPage()" id="btn-next-page" class="bg-purple-500 hover:bg-purple-600 text-white font-black px-6 py-3 rounded-2xl transition border-b-4 border-purple-700">
+                    Next <i class="fas fa-arrow-right ml-1"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Vocabulary Box (shown at end) -->
+        <div id="vocab-box" class="hidden bg-amber-50 border-t-4 border-amber-300 p-6">
+            <h4 class="font-black text-amber-800 text-lg mb-3">📚 Words We Learned in This Story:</h4>
+            <div id="vocab-list" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+            <div class="mt-4 text-center">
+                <button onclick="closeStory()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-black px-8 py-3 rounded-2xl border-b-4 border-emerald-700 transition">
+                    Excellent! Choose Another Story 🎉
+                </button>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="bg-slate-900 text-white pt-10 pb-6 mt-16 border-t-8 border-yellow-400">
+    <div class="container mx-auto px-4 max-w-5xl text-center">
+        <h4 class="text-xl font-black text-yellow-400 mb-2">Southern Tunisia Explorer 🏜️</h4>
+        <div class="flex flex-wrap gap-3 justify-center mt-3 text-xs font-bold">
+            <a href="index.html"     class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-lg transition">🏠 Home</a>
+            <a href="decouvrir.html" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-lg transition">🧭 Discover</a>
+            <a href="jeux.html"      class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-lg transition">🎮 Play</a>
+            <a href="cuisine.html"   class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-lg transition">🍲 Cuisine</a>
+            <a href="parents.html"   class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-lg transition">👪 Parents</a>
+        </div>
+        <p class="text-xs text-slate-500 mt-4">&copy; 2026 — All rights reserved</p>
+    </div>
+</footer>
+
+<script src="js/app.js"></script>
+<script>
+// ── STORIES DATA ────────────────────────────────────────────
+const StoriesData = {
+    zara: {
+        title: '💧 Zara and the Secret Oasis',
+        badge: 'storyteller',
+        vocab: [
+            { word: 'Oasis',     meaning: 'A green area with water in the middle of a desert' },
+            { word: 'Mirage',    meaning: 'A trick of light that looks like water in the desert' },
+            { word: 'Ghorfa',    meaning: 'A traditional Berber storage room in a ksar' },
+            { word: 'Tamerza',   meaning: 'A mountain oasis in southern Tunisia with waterfalls' },
+        ],
+        pages: [
+            { emoji:'🌅', bg:'from-teal-50 to-cyan-50', text:'Zara was a curious and brave girl who lived in a village near the great palm groves of Tozeur, southern Tunisia. Every morning she watched the desert sun rise over the endless golden dunes and dreamed of discovering something magical...' },
+            { emoji:'🗺️', bg:'from-amber-50 to-yellow-50', text:'One day, an old shepherd told Zara about a secret place hidden in the mountains — a waterfall that flowed even in the middle of the scorching desert! "It is called the Tamerza Oasis," he whispered, "but you must climb far to find it..."' },
+            { emoji:'⛰️', bg:'from-orange-50 to-rose-50', text:'Zara packed dates and water and set off toward the rocky mountains. The path was steep and the sun was fierce, but she kept climbing. Suddenly she heard something impossible — the sound of rushing water in the desert!' },
+            { emoji:'💦', bg:'from-emerald-50 to-teal-50', text:'She rounded a rocky corner and gasped! A real waterfall tumbled down ancient stone into a crystal-clear pool, surrounded by swaying palm trees and colorful birds. A family of Fennec foxes was drinking peacefully from the spring!' },
+            { emoji:'🌟', bg:'from-purple-50 to-indigo-50', text:'Zara sat by the magical oasis until sunset, understanding why the desert was called the "Sea of Secrets." Southern Tunisia is full of wonders for those brave enough to explore. She vowed to share this treasure with every child she knew! 🇹🇳' },
+        ]
+    },
+    fennec: {
+        title: '🦊 Foufou the Fennec\'s Big Adventure',
+        badge: 'storyteller',
+        vocab: [
+            { word: 'Fennec',    meaning: 'A tiny desert fox with enormous ears found in the Sahara' },
+            { word: 'Oasis',     meaning: 'A green area with water in the middle of a desert' },
+            { word: 'Dunes',     meaning: 'Rolling hills of sand shaped by the desert wind' },
+            { word: 'Nomad',     meaning: 'A person who travels from place to place in the desert' },
+        ],
+        pages: [
+            { emoji:'🌅', bg:'from-orange-50 to-amber-50', text:'In the wide golden Sahara of southern Tunisia, a tiny Fennec Fox named Foufou lived with his family in a cozy burrow under the warm sand. Foufou was famous for his enormous ears — bigger than his whole head! — that could hear every sound for miles around.' },
+            { emoji:'✨', bg:'from-yellow-50 to-lime-50', text:'One bright morning, Foufou spotted a strange glittering light far away on the horizon! His big ears flicked with excitement. He raced across the dunes — Fennec paws are so light they barely leave prints in the sand — to find out what was shining so brilliantly!' },
+            { emoji:'🌴', bg:'from-emerald-50 to-teal-50', text:'Foufou discovered a beautiful oasis he had never seen before! Tall date palms reached up to the blue sky, cool spring water bubbled up from the ground, and bright red dates hung in heavy clusters. "This is a real treasure in the middle of the desert!" he exclaimed.' },
+            { emoji:'🦊', bg:'from-pink-50 to-rose-50', text:'Foufou dashed back home across the dunes and told his whole family about his incredible discovery. They leaped with joy and moved together near the wonderful oasis. From that day on, Foufou\'s oasis became the best-kept secret in all of southern Tunisia! 🌟' },
+        ]
+    },
+    ksar: {
+        title: '🏰 Zied and the Ancient Ksar',
+        badge: 'storyteller',
+        vocab: [
+            { word: 'Ksar',      meaning: 'An ancient Berber fortress used to store grain (plural: Ksour)' },
+            { word: 'Ghorfa',    meaning: 'A stone storage room inside a ksar, stacked on several floors' },
+            { word: 'Berber',    meaning: 'The original people of North Africa, who built the ksour' },
+            { word: 'Heritage',  meaning: 'Important buildings and traditions passed down through generations' },
+        ],
+        pages: [
+            { emoji:'🌟', bg:'from-sky-50 to-blue-50', text:'Zied was a ten-year-old boy from Medenine who dreamed of becoming a great explorer. His bedroom walls were covered in maps of southern Tunisia — the desert, the ksour, the oases. One summer, his wish finally came true!' },
+            { emoji:'🏰', bg:'from-amber-50 to-orange-50', text:'His family drove him to Ksar Ouled Soltane near Tataouine — one of the most amazing ancient fortresses in the entire world. When Zied first saw it standing against the blue sky, his jaw dropped. Four floors of stone rooms (ghorfas) rose around a courtyard like a giant honeycomb!' },
+            { emoji:'⚔️', bg:'from-rose-50 to-red-50', text:'Zied walked into the courtyard and closed his eyes. He imagined Berber nomads arriving on camels 600 years ago, carrying sacks of grain and dried dates to store in the cool stone rooms for the long desert winter. He could almost hear the sound of ancient drums...' },
+            { emoji:'🛡️', bg:'from-green-50 to-emerald-50', text:'The guide explained: "This ksar was built around 1400 AD. The Berber people were very clever — the thick stone walls kept food perfectly cool even in the blazing summer heat. No refrigerators needed!" Zied was amazed that ancient people had such brilliant ideas.' },
+            { emoji:'🇹🇳', bg:'from-purple-50 to-violet-50', text:'As the sun set and painted the ksar golden, Zied made a promise: he would become an archaeologist and protect the treasures of southern Tunisia forever. "These ancient builders were geniuses," he said. "And I will make sure the world never forgets them!" 🏆' },
+        ]
+    }
+};
+
+let currentStoryKey = '';
+let currentPageIdx  = 0;
+
+function openStory(key) {
+    SoundFX.playClick();
+    currentStoryKey = key;
+    currentPageIdx  = 0;
+    const story = StoriesData[key];
+
+    document.getElementById('story-selection').classList.add('hidden');
+    document.getElementById('story-reader').classList.remove('hidden');
+    document.getElementById('story-reader-title').innerText = story.title;
+    document.getElementById('vocab-box').classList.add('hidden');
+    document.getElementById('story-pages-container').classList.remove('hidden');
+
+    buildDots(story.pages.length);
+    renderStoryPage();
+}
+
+function closeStory() {
+    SoundFX.playClick();
+    document.getElementById('story-selection').classList.remove('hidden');
+    document.getElementById('story-reader').classList.add('hidden');
+}
+
+function buildDots(count) {
+    const container = document.getElementById('story-dots');
+    container.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+        const d = document.createElement('div');
+        d.className = 'w-3 h-3 rounded-full bg-slate-200 transition-all duration-300';
+        d.id = `dot-${i}`;
+        container.appendChild(d);
+    }
+}
+
+function renderStoryPage() {
+    const story = StoriesData[currentStoryKey];
+    const page  = story.pages[currentPageIdx];
+    const total = story.pages.length;
+
+    document.getElementById('story-page-counter').innerText = `${currentPageIdx + 1} / ${total}`;
+
+    story.pages.forEach((_, i) => {
+        const d = document.getElementById(`dot-${i}`);
+        if (d) d.className = `w-3 h-3 rounded-full transition-all duration-300 ${i === currentPageIdx ? 'bg-purple-500 w-6' : 'bg-slate-200'}`;
+    });
+
+    const container = document.getElementById('story-pages-container');
+    container.innerHTML = `
+        <div class="bg-gradient-to-br ${page.bg} rounded-3xl p-6 md:p-10 text-center space-y-6 border-4 border-white shadow-inner">
+            <div class="text-8xl animate-bounce-slow">${page.emoji}</div>
+            <p class="text-xl md:text-2xl font-bold text-slate-800 leading-relaxed">${page.text}</p>
+        </div>
+    `;
+
+    document.getElementById('btn-prev-page').disabled = currentPageIdx === 0;
+    document.getElementById('btn-next-page').innerText = currentPageIdx === total - 1 ? '🎉 Finish Story' : 'Next →';
+}
+
+function nextStoryPage() {
+    SoundFX.playClick();
+    const story = StoriesData[currentStoryKey];
+    if (currentPageIdx < story.pages.length - 1) {
+        currentPageIdx++;
+        renderStoryPage();
+    } else {
+        finishStory();
+    }
+}
+
+function prevStoryPage() {
+    SoundFX.playClick();
+    if (currentPageIdx > 0) {
+        currentPageIdx--;
+        renderStoryPage();
+    }
+}
+
+function finishStory() {
+    const story = StoriesData[currentStoryKey];
+    SoundFX.playSuccess();
+    createConfetti();
+
+    document.getElementById('story-pages-container').classList.add('hidden');
+    document.getElementById('btn-prev-page').classList.add('hidden');
+    document.getElementById('btn-next-page').classList.add('hidden');
+
+    const vocabBox  = document.getElementById('vocab-box');
+    const vocabList = document.getElementById('vocab-list');
+    vocabList.innerHTML = story.vocab.map(v => `
+        <div class="bg-white rounded-2xl p-3 border-2 border-amber-200 text-center">
+            <div class="font-black text-amber-700 text-base mb-1">${v.word}</div>
+            <div class="text-xs text-slate-500 font-bold">${v.meaning}</div>
+        </div>
+    `).join('');
+    vocabBox.classList.remove('hidden');
+
+    if (!AppState.readStories.includes(currentStoryKey)) {
+        markStoryRead(currentStoryKey);
+        addPoints(20);
+        showCustomMessage('🎉 Story finished! You earned 20 points!');
+    }
+
+    if (AppState.readStories.length >= 3) {
+        awardBadge('storyteller');
+    }
+}
+</script>
+</body>
+</html>

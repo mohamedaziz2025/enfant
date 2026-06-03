@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+  <defs>
+    <linearGradient id="skyI" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#87CEEB"/>
+      <stop offset="100%" stop-color="#B0E0FF"/>
+    </linearGradient>
+    <linearGradient id="lakeI" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#20B2AA"/>
+      <stop offset="100%" stop-color="#008B8B"/>
+    </linearGradient>
+  </defs>
+  <!-- Sky -->
+  <rect width="600" height="400" fill="url(#skyI)"/>
+  <!-- Clouds -->
+  <ellipse cx="120" cy="60" rx="55" ry="22" fill="white" opacity="0.8"/>
+  <ellipse cx="160" cy="55" rx="45" ry="20" fill="white" opacity="0.8"/>
+  <ellipse cx="85" cy="65" rx="35" ry="18" fill="white" opacity="0.8"/>
+  <ellipse cx="450" cy="50" rx="60" ry="22" fill="white" opacity="0.8"/>
+  <ellipse cx="500" cy="45" rx="50" ry="20" fill="white" opacity="0.8"/>
+  <!-- Lake Ichkeul -->
+  <ellipse cx="300" cy="320" rx="280" ry="120" fill="url(#lakeI)"/>
+  <!-- Reed marsh area -->
+  <ellipse cx="300" cy="270" rx="250" ry="60" fill="#4A7C40" opacity="0.7"/>
+  <!-- Water reflections -->
+  <path d="M 100 310 Q 200 300 300 310 Q 400 320 500 310" stroke="white" stroke-width="1.5" fill="none" opacity="0.4"/>
+  <path d="M 80 330 Q 190 320 300 330 Q 410 340 520 330" stroke="white" stroke-width="1.5" fill="none" opacity="0.4"/>
+  <!-- Jebel Ichkeul mountain in background -->
+  <polygon points="280,80 180,250 380,250" fill="#6B8E5A"/>
+  <polygon points="300,75 220,230 380,230" fill="#7A9E6A"/>
+  <polygon points="315,85 260,200 370,200" fill="#8AAE7A"/>
+  <!-- Mountain snow top -->
+  <polygon points="300,75 285,115 315,115" fill="#F0F0F0" opacity="0.6"/>
+  <!-- Green vegetation around lake -->
+  <ellipse cx="80" cy="260" rx="35" ry="15" fill="#3D6B35"/>
+  <ellipse cx="520" cy="260" rx="35" ry="15" fill="#3D6B35"/>
+  <!-- Reed beds -->
+  <g stroke="#5D8B50" stroke-width="2" fill="none">
+    <line x1="150" y1="270" x2="148" y2="240"/><line x1="160" y1="268" x2="158" y2="238"/>
+    <line x1="170" y1="270" x2="168" y2="240"/><line x1="180" y1="272" x2="178" y2="242"/>
+    <line x1="430" y1="270" x2="428" y2="240"/><line x1="440" y1="268" x2="438" y2="238"/>
+    <line x1="450" y1="270" x2="448" y2="240"/><line x1="420" y1="272" x2="418" y2="242"/>
+  </g>
+  <!-- Reed tops (bulrush) -->
+  <g fill="#8B6914">
+    <ellipse cx="150" cy="240" rx="5" ry="12"/><ellipse cx="160" cy="238" rx="5" ry="12"/>
+    <ellipse cx="170" cy="240" rx="5" ry="12"/><ellipse cx="180" cy="242" rx="5" ry="12"/>
+    <ellipse cx="430" cy="240" rx="5" ry="12"/><ellipse cx="440" cy="238" rx="5" ry="12"/>
+    <ellipse cx="450" cy="240" rx="5" ry="12"/><ellipse cx="420" cy="242" rx="5" ry="12"/>
+  </g>
+  <!-- FLAMINGOS - main feature -->
+  <!-- Flamingo 1 (large, pink) -->
+  <g transform="translate(270,220)">
+    <circle cx="0" cy="-20" r="12" fill="#FF9EC7"/>
+    <path d="M 0 -12 Q -8 10 -5 40" stroke="#FF69B4" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M -5 40 Q -20 50 -5 55" stroke="#FF69B4" stroke-width="4" fill="none"/>
+    <path d="M -5 40 Q 10 48 -5 55" stroke="#FF69B4" stroke-width="3" fill="none"/>
+    <!-- Wing -->
+    <path d="M -5 15 Q -30 5 -25 25" stroke="#FF1493" stroke-width="5" fill="none"/>
+    <!-- Beak -->
+    <path d="M 5 -25 Q 15 -22 14 -17" stroke="#FF8C00" stroke-width="3" fill="none"/>
+    <!-- Eye -->
+    <circle cx="3" cy="-23" r="2" fill="#333"/>
+  </g>
+  <!-- Flamingo 2 -->
+  <g transform="translate(310,230)">
+    <circle cx="0" cy="-18" r="10" fill="#FFB6D9"/>
+    <path d="M 0 -10 Q -6 8 -4 35" stroke="#FF69B4" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M -4 35 Q -16 44 -4 48" stroke="#FF69B4" stroke-width="3" fill="none"/>
+    <path d="M -4 35 Q 8 42 -4 48" stroke="#FF69B4" stroke-width="3" fill="none"/>
+    <path d="M -4 12 Q -25 4 -22 20" stroke="#FF1493" stroke-width="4" fill="none"/>
+    <path d="M 4 -22 Q 13 -19 12 -15" stroke="#FF8C00" stroke-width="2.5" fill="none"/>
+    <circle cx="3" cy="-20" r="1.5" fill="#333"/>
+  </g>
+  <!-- Flamingo 3 (far) -->
+  <g transform="translate(345,240)">
+    <circle cx="0" cy="-15" r="8" fill="#FFB6D9"/>
+    <path d="M 0 -8 Q -5 6 -3 28" stroke="#FF69B4" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M -3 28 Q -12 36 -3 40" stroke="#FF69B4" stroke-width="3" fill="none"/>
+    <path d="M -3 28 Q 6 35 -3 40" stroke="#FF69B4" stroke-width="2.5" fill="none"/>
+    <path d="M 3 -18 Q 10 -15 10 -11" stroke="#FF8C00" stroke-width="2" fill="none"/>
+  </g>
+  <!-- Small flamingos in distance -->
+  <ellipse cx="180" cy="285" rx="6" ry="4" fill="#FFB6D9" opacity="0.7"/>
+  <ellipse cx="420" cy="290" rx="6" ry="4" fill="#FFB6D9" opacity="0.7"/>
+  <!-- Label -->
+  <rect x="155" y="355" width="290" height="36" rx="8" fill="#006666" opacity="0.85"/>
+  <text x="300" y="379" text-anchor="middle" font-family="Cairo, Arial" font-size="18" fill="white" font-weight="bold">بحيرة إشكل والفلامينغو</text>
+</svg>

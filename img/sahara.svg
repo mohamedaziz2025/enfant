@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+  <defs>
+    <linearGradient id="skySah" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FF6B35"/>
+      <stop offset="40%" stop-color="#FF9F1C"/>
+      <stop offset="100%" stop-color="#FFD060"/>
+    </linearGradient>
+    <linearGradient id="sand1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#E8B86D"/>
+      <stop offset="100%" stop-color="#C4882A"/>
+    </linearGradient>
+    <linearGradient id="sand2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F0C878"/>
+      <stop offset="100%" stop-color="#D49830"/>
+    </linearGradient>
+    <linearGradient id="sand3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#DCA855"/>
+      <stop offset="100%" stop-color="#B87820"/>
+    </linearGradient>
+  </defs>
+  <!-- Sky gradient (sunset) -->
+  <rect width="600" height="400" fill="url(#skySah)"/>
+  <!-- Large Sun -->
+  <circle cx="300" cy="130" r="65" fill="#FFD700" opacity="0.9"/>
+  <circle cx="300" cy="130" r="80" fill="#FF8C00" opacity="0.25"/>
+  <!-- Sun rays -->
+  <g stroke="#FFD700" stroke-width="2" opacity="0.5">
+    <line x1="300" y1="40" x2="300" y2="20"/>
+    <line x1="370" y1="65" x2="385" y2="50"/>
+    <line x1="390" y1="130" x2="415" y2="130"/>
+    <line x1="370" y1="195" x2="385" y2="210"/>
+    <line x1="230" y1="65" x2="215" y2="50"/>
+    <line x1="210" y1="130" x2="185" y2="130"/>
+    <line x1="230" y1="195" x2="215" y2="210"/>
+  </g>
+  <!-- Dune layers (far) -->
+  <path d="M 0 280 Q 100 210 200 240 Q 300 270 400 220 Q 500 170 600 230 L 600 400 L 0 400 Z" fill="url(#sand3)"/>
+  <!-- Dune layers (middle) -->
+  <path d="M 0 320 Q 120 260 240 290 Q 350 315 480 265 Q 540 245 600 270 L 600 400 L 0 400 Z" fill="url(#sand1)"/>
+  <!-- Dune layers (front) -->
+  <path d="M 0 360 Q 80 330 180 345 Q 280 358 380 335 Q 460 318 600 345 L 600 400 L 0 400 Z" fill="url(#sand2)"/>
+  <!-- Dune shadows -->
+  <path d="M 0 280 Q 100 210 200 240 Q 160 260 80 290 Z" fill="#A06010" opacity="0.3"/>
+  <path d="M 400 220 Q 500 170 600 230 Q 550 250 450 265 Z" fill="#A06010" opacity="0.3"/>
+  <!-- CAMEL -->
+  <g transform="translate(380,230)">
+    <!-- Body -->
+    <ellipse cx="0" cy="30" rx="55" ry="30" fill="#C4882A"/>
+    <!-- Hump -->
+    <ellipse cx="-10" cy="5" rx="25" ry="22" fill="#D4982A"/>
+    <ellipse cx="15" cy="3" rx="20" ry="18" fill="#D4982A"/>
+    <!-- Neck -->
+    <rect x="-35" y="-5" width="18" height="35" rx="8" fill="#C4882A" transform="rotate(-15,-26,12)"/>
+    <!-- Head -->
+    <ellipse cx="-55" cy="-20" rx="18" ry="14" fill="#C4882A"/>
+    <!-- Ear -->
+    <ellipse cx="-48" cy="-32" rx="5" ry="8" fill="#D4982A"/>
+    <!-- Eye -->
+    <circle cx="-60" cy="-22" r="3" fill="#333"/>
+    <circle cx="-59" cy="-23" r="1.5" fill="white"/>
+    <!-- Nose/mouth -->
+    <path d="M -68 -15 Q -65 -10 -62 -15" stroke="#8B6500" stroke-width="1.5" fill="none"/>
+    <!-- Legs -->
+    <rect x="-35" y="55" width="12" height="40" rx="5" fill="#B87820"/>
+    <rect x="-15" y="55" width="12" height="45" rx="5" fill="#B87820"/>
+    <rect x="15" y="55" width="12" height="38" rx="5" fill="#B87820"/>
+    <rect x="35" y="55" width="12" height="42" rx="5" fill="#B87820"/>
+    <!-- Hooves -->
+    <ellipse cx="-29" cy="95" rx="8" ry="5" fill="#8B6500"/>
+    <ellipse cx="-9" cy="100" rx="8" ry="5" fill="#8B6500"/>
+    <ellipse cx="21" cy="93" rx="8" ry="5" fill="#8B6500"/>
+    <ellipse cx="41" cy="97" rx="8" ry="5" fill="#8B6500"/>
+    <!-- Tail -->
+    <path d="M 55 25 Q 70 15 68 35" stroke="#B87820" stroke-width="4" fill="none"/>
+    <!-- Saddle -->
+    <rect x="-12" y="-5" width="30" height="20" rx="5" fill="#8B0000"/>
+    <rect x="-15" y="0" width="36" height="8" rx="3" fill="#A00000"/>
+  </g>
+  <!-- Stars in sky -->
+  <circle cx="50" cy="50" r="2" fill="white" opacity="0.8"/>
+  <circle cx="150" cy="30" r="1.5" fill="white" opacity="0.7"/>
+  <circle cx="520" cy="40" r="2" fill="white" opacity="0.8"/>
+  <!-- Crescent moon -->
+  <circle cx="80" cy="80" r="15" fill="#FFD700" opacity="0.6"/>
+  <circle cx="88" cy="75" r="12" fill="#FF6B35" opacity="0.9"/>
+  <!-- Wind lines on sand -->
+  <path d="M 30 350 Q 100 345 170 350" stroke="#E8C870" stroke-width="1.5" fill="none" opacity="0.5"/>
+  <path d="M 400 340 Q 470 335 540 340" stroke="#E8C870" stroke-width="1.5" fill="none" opacity="0.5"/>
+  <!-- Label -->
+  <rect x="155" y="355" width="290" height="36" rx="8" fill="#7A3500" opacity="0.85"/>
+  <text x="300" y="379" text-anchor="middle" font-family="Cairo, Arial" font-size="18" fill="#FFD700" font-weight="bold">الصحراء التونسية الكبرى</text>
+</svg>

@@ -1,0 +1,6 @@
+services:
+  enfant:
+    build: .
+    ports:
+      - "2026:80"
+    restart: unless-stopped

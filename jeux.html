@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Play & Challenge | Southern Tunisia Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>tailwind.config={theme:{extend:{fontFamily:{nunito:['Nunito','sans-serif']},colors:{tunisRed:'#E10600',skyBlue:'#38BDF8',sunnyYellow:'#FBBF24',jungleGreen:'#34D399'},animation:{'bounce-slow':'bounce 3s infinite','wiggle':'wiggle 1s ease-in-out infinite','pulse-slow':'pulse 4s cubic-bezier(0.4,0,0.6,1) infinite'},keyframes:{wiggle:{'0%,100%':{transform:'rotate(-3deg)'},'50%':{transform:'rotate(3deg)'}}}}}}
+    </script>
+    <style>
+        body{font-family:'Nunito',sans-serif;background:#FFF8F0}
+        ::-webkit-scrollbar{width:10px}::-webkit-scrollbar-thumb{background:#F97316;border-radius:5px}
+        .confetti{position:fixed;width:10px;height:10px;border-radius:50%;pointer-events:none}
+        @keyframes confettiFall{0%{transform:translateY(-50px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(360deg);opacity:0}}
+        .custom-toast{animation:slideUp .3s ease}
+        @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+        .nav-scroll{overflow-x:auto;scrollbar-width:none}
+        .nav-scroll::-webkit-scrollbar{display:none}
+        .play-tab{display:none}
+        .play-tab.active-tab{display:block}
+    </style>
+</head>
+<body class="overflow-x-hidden text-slate-800">
+
+<!-- AVATAR MODAL -->
+<div id="avatar-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 max-w-2xl w-full border-8 border-yellow-400 shadow-2xl relative overflow-y-auto max-h-[90vh]">
+        <h2 class="text-2xl font-black text-center text-slate-900 mb-4">Choose Your Companion 🏜️</h2>
+        <div class="mb-5"><input type="text" id="avatar-input-name" class="w-full px-4 py-3 rounded-xl border-4 border-sky-400 text-lg font-bold outline-none focus:border-yellow-400 transition" placeholder="Write your name..."></div>
+        <div class="grid grid-cols-4 gap-3 mb-6">
+            <div onclick="selectAvatarOption('hannibal')" id="opt-hannibal" class="avatar-option border-4 border-slate-200 rounded-2xl p-3 cursor-pointer text-center hover:bg-sky-50 transition"><div class="text-4xl mb-1">🛡️</div><div class="font-black text-xs">Hannibal</div></div>
+            <div onclick="selectAvatarOption('jasmine')"  id="opt-jasmine"  class="avatar-option border-4 border-slate-200 rounded-2xl p-3 cursor-pointer text-center hover:bg-sky-50 transition"><div class="text-4xl mb-1">🌸</div><div class="font-black text-xs">Jasmine</div></div>
+            <div onclick="selectAvatarOption('fennec')"   id="opt-fennec"   class="avatar-option border-4 border-slate-200 rounded-2xl p-3 cursor-pointer text-center hover:bg-sky-50 transition"><div class="text-4xl mb-1">🦊</div><div class="font-black text-xs">Fennec</div></div>
+            <div onclick="selectAvatarOption('sailor')"   id="opt-sailor"   class="avatar-option border-4 border-slate-200 rounded-2xl p-3 cursor-pointer text-center hover:bg-sky-50 transition"><div class="text-4xl mb-1">⛵</div><div class="font-black text-xs">Sailor</div></div>
+        </div>
+        <div class="flex justify-center"><button onclick="confirmAvatarSelection()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xl px-10 py-3 rounded-2xl shadow-lg border-b-4 border-emerald-700 transition">Let's Go! 🚀</button></div>
+    </div>
+</div>
+
+<!-- HEADER -->
+<header class="bg-gradient-to-b from-amber-500 to-orange-400 pb-6 relative overflow-hidden shadow-lg border-b-4 border-dashed border-amber-400">
+    <div class="absolute top-4 right-6 text-white text-4xl opacity-40 animate-bounce-slow">☀️</div>
+    <div class="container mx-auto px-4 pt-4 flex flex-col md:flex-row justify-between items-center relative z-10">
+        <a href="index.html" class="flex items-center gap-3">
+            <div class="bg-white p-3 rounded-full shadow-md border-4 border-yellow-400 hover:scale-110 transition"><span class="text-3xl">🏜️</span></div>
+            <div><h1 class="text-2xl font-black text-white drop-shadow">Southern Tunisia Explorer</h1>
+            <p class="text-sm font-bold text-amber-100">Discover the Desert South 🌍</p></div>
+        </a>
+        <div class="flex flex-wrap items-center justify-center gap-3 mt-4 md:mt-0">
+            <div class="bg-amber-100 border-2 border-amber-400 px-4 py-2 rounded-full flex items-center gap-2 shadow-inner"><span class="text-xl">⭐</span><div><div class="text-xs text-amber-800 font-bold">Points</div><div class="text-lg font-black text-amber-600" id="header-points">0</div></div></div>
+            <div id="level-badge" class="border-2 px-3 py-1 rounded-full text-xs font-black shadow">🌱 Beginner Explorer</div>
+            <div id="avatar-status" class="bg-white border-2 border-teal-400 px-4 py-1 rounded-full flex items-center gap-2 shadow cursor-pointer" onclick="openAvatarSelector()"></div>
+            <button onclick="resetAdventure()" class="text-xs bg-red-100 hover:bg-red-200 text-red-700 px-2.5 py-1.5 rounded-lg border border-red-300 font-bold transition"><i class="fas fa-redo-alt mr-1"></i> Reset</button>
+        </div>
+    </div>
+    <nav class="container mx-auto px-4 mt-5 relative z-10">
+        <div class="nav-scroll">
+            <div class="flex gap-2 justify-start md:justify-center bg-white/80 p-2 rounded-2xl shadow border-2 border-white min-w-max md:mx-auto">
+                <a id="nav-home"     href="index.html"     class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">🏠 Home</a>
+                <a id="nav-discover" href="decouvrir.html" class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">🧭 Discover</a>
+                <a id="nav-stories"  href="histoires.html" class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">📖 Stories</a>
+                <a id="nav-play"     href="jeux.html"      class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">🎮 Play</a>
+                <a id="nav-cuisine"  href="cuisine.html"   class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">🍲 Cuisine</a>
+                <a id="nav-parents"  href="parents.html"   class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">👪 Parents</a>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<main class="container mx-auto px-4 py-8 max-w-5xl space-y-8">
+    <div class="text-center space-y-2">
+        <span class="text-5xl">🎮</span>
+        <h2 class="text-3xl font-black text-slate-900">Games & Challenges</h2>
+        <p class="text-slate-600 font-bold">Test yourself, collect golden stars, and unlock your own special badges!</p>
+    </div>
+
+    <!-- PLAY SUB-NAV -->
+    <div class="flex flex-wrap justify-center gap-3 border-b-4 border-dashed border-slate-200 pb-4">
+        <button onclick="switchPlayTab('quiz-tab')"     id="btn-quiz"     class="play-nav-btn bg-sky-500 text-white px-5 py-2.5 rounded-xl font-black text-base shadow transition">⭐ Knowledge Quiz</button>
+        <button onclick="switchPlayTab('hunt-tab')"     id="btn-hunt"     class="play-nav-btn bg-slate-100 text-slate-600 px-5 py-2.5 rounded-xl font-black text-base shadow transition hover:bg-slate-200">🔑 Treasure Hunt</button>
+        <button onclick="switchPlayTab('coloring-tab')" id="btn-coloring" class="play-nav-btn bg-slate-100 text-slate-600 px-5 py-2.5 rounded-xl font-black text-base shadow transition hover:bg-slate-200">🎨 Coloring Book</button>
+    </div>
+
+    <!-- ═══════════════ QUIZ TAB ═══════════════ -->
+    <div id="quiz-tab" class="play-tab active-tab space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white rounded-3xl p-6 border-4 border-rose-300 shadow">
+                <div class="text-4xl mb-3">🏰</div>
+                <h3 class="text-xl font-black text-slate-900 mb-2">History & Culture Quiz</h3>
+                <p class="text-sm text-slate-500 font-bold mb-4">5 questions about the amazing historical sites and Berber heritage of southern Tunisia!</p>
+                <button onclick="startQuiz('quiz1')" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-black py-3 rounded-2xl border-b-4 border-rose-700 shadow transition">Start History Quiz 🚀</button>
+            </div>
+            <div class="bg-white rounded-3xl p-6 border-4 border-amber-300 shadow">
+                <div class="text-4xl mb-3">🦁</div>
+                <h3 class="text-xl font-black text-slate-900 mb-2">Sahara Nature Quiz</h3>
+                <p class="text-sm text-slate-500 font-bold mb-4">5 questions about the amazing animals, desert landscapes, and oases of the south!</p>
+                <button onclick="startQuiz('quiz2')" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-black py-3 rounded-2xl border-b-4 border-amber-700 shadow transition">Start Nature Quiz 🚀</button>
+            </div>
+        </div>
+
+        <div id="quiz-play-box" class="hidden bg-white rounded-3xl p-6 md:p-8 border-4 border-sky-400 shadow-lg max-w-2xl mx-auto space-y-5 relative">
+            <div class="absolute -top-4 -left-4 text-4xl -rotate-12 animate-wiggle">🧭</div>
+            <div class="flex justify-between items-center border-b pb-3">
+                <h4 id="quiz-title" class="font-black text-lg text-slate-800">Quiz Name</h4>
+                <span id="quiz-progress" class="bg-sky-100 text-sky-700 text-xs font-black px-3 py-1 rounded-full">Question 1 of 5</span>
+            </div>
+            <p id="quiz-question-text" class="text-xl font-black text-slate-900 leading-relaxed"></p>
+            <div id="quiz-choices" class="space-y-3"></div>
+            <div id="quiz-feedback" class="hidden text-center p-3 rounded-2xl font-black"></div>
+            <div class="flex justify-end">
+                <button id="quiz-next-btn" onclick="nextQuestion()" class="hidden bg-yellow-400 hover:bg-yellow-300 text-slate-900 font-black px-6 py-2.5 rounded-xl border-b-4 border-amber-500 transition">
+                    Next Question <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ HUNT TAB ═══════════════ -->
+    <div id="hunt-tab" class="play-tab hidden max-w-2xl mx-auto">
+        <div class="bg-gradient-to-br from-amber-50 to-yellow-100 p-6 md:p-8 rounded-3xl border-4 border-amber-400 space-y-5 shadow relative">
+            <div class="absolute -top-6 left-6 text-5xl rotate-12 animate-bounce-slow">🗝️</div>
+            <h3 class="text-2xl font-black text-slate-900 text-center">🕵️ The Lost Treasure Hunt</h3>
+            <p class="text-slate-600 font-bold text-center text-sm">There are 5 mysterious riddles hidden across southern Tunisia! Guess each answer to win 10 points per riddle!</p>
+
+            <!-- Clue 1 -->
+            <div id="clue-container-1" class="bg-white p-4 rounded-2xl border-2 border-slate-200 space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="bg-amber-100 text-amber-700 text-xs font-black px-3 py-1 rounded-full">Riddle 1 🧩</span>
+                    <span id="clue-status-1" class="text-xs font-bold text-rose-500">🔒 Locked</span>
+                </div>
+                <p class="font-bold text-slate-700">"I am an ancient Berber fortress near Tataouine. My four-story stone rooms store grain and secrets. Tourists call me one of the most beautiful ksour in the world. What am I?"</p>
+                <div class="flex gap-2">
+                    <input type="text" id="clue-input-1" class="flex-1 px-4 py-2 border-2 rounded-xl text-sm font-bold outline-none focus:border-amber-400" placeholder="Type your answer...">
+                    <button onclick="verifyClue(1,'ksar ouled soltane')" class="bg-amber-500 hover:bg-amber-600 text-white font-black px-4 py-2 rounded-xl text-sm transition">Check</button>
+                </div>
+            </div>
+
+            <!-- Clue 2 -->
+            <div id="clue-container-2" class="bg-white p-4 rounded-2xl border-2 border-slate-200 space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="bg-amber-100 text-amber-700 text-xs font-black px-3 py-1 rounded-full">Riddle 2 🧩</span>
+                    <span id="clue-status-2" class="text-xs font-bold text-rose-500">🔒 Locked</span>
+                </div>
+                <p class="font-bold text-slate-700">"I am a giant salt lake in southern Tunisia. In summer I dry up and look like a giant mirror of dazzling salt and light. Cars cross a road that seems to disappear into me. What am I?"</p>
+                <div class="flex gap-2">
+                    <input type="text" id="clue-input-2" class="flex-1 px-4 py-2 border-2 rounded-xl text-sm font-bold outline-none focus:border-amber-400" placeholder="Type your answer...">
+                    <button onclick="verifyClue(2,'chott')" class="bg-amber-500 hover:bg-amber-600 text-white font-black px-4 py-2 rounded-xl text-sm transition">Check</button>
+                </div>
+            </div>
+
+            <!-- Clue 3 -->
+            <div id="clue-container-3" class="bg-white p-4 rounded-2xl border-2 border-slate-200 space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="bg-amber-100 text-amber-700 text-xs font-black px-3 py-1 rounded-full">Riddle 3 🧩</span>
+                    <span id="clue-status-3" class="text-xs font-bold text-rose-500">🔒 Locked</span>
+                </div>
+                <p class="font-bold text-slate-700">"I am a tiny desert animal with ears bigger than my head! I can hear a mouse from 300 metres away. I live in the Sahara dunes of southern Tunisia. What am I?"</p>
+                <div class="flex gap-2">
+                    <input type="text" id="clue-input-3" class="flex-1 px-4 py-2 border-2 rounded-xl text-sm font-bold outline-none focus:border-amber-400" placeholder="e.g. Fennec or Fennec Fox">
+                    <button onclick="verifyClue(3,'fennec')" class="bg-amber-500 hover:bg-amber-600 text-white font-black px-4 py-2 rounded-xl text-sm transition">Check</button>
+                </div>
+            </div>
+
+            <!-- Clue 4 -->
+            <div id="clue-container-4" class="bg-white p-4 rounded-2xl border-2 border-slate-200 space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="bg-amber-100 text-amber-700 text-xs font-black px-3 py-1 rounded-full">Riddle 4 🧩</span>
+                    <span id="clue-status-4" class="text-xs font-bold text-rose-500">🔒 Locked</span>
+                </div>
+                <p class="font-bold text-slate-700">"I am a city nicknamed the 'Gateway to the Sahara'. Every December I host the world's biggest desert festival with camel racing. I am surrounded by golden dunes. What city am I?"</p>
+                <div class="flex gap-2">
+                    <input type="text" id="clue-input-4" class="flex-1 px-4 py-2 border-2 rounded-xl text-sm font-bold outline-none focus:border-amber-400" placeholder="Type the city name...">
+                    <button onclick="verifyClue(4,'douz')" class="bg-amber-500 hover:bg-amber-600 text-white font-black px-4 py-2 rounded-xl text-sm transition">Check</button>
+                </div>
+            </div>
+
+            <!-- Clue 5 -->
+            <div id="clue-container-5" class="bg-white p-4 rounded-2xl border-2 border-slate-200 space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="bg-amber-100 text-amber-700 text-xs font-black px-3 py-1 rounded-full">Riddle 5 🧩</span>
+                    <span id="clue-status-5" class="text-xs font-bold text-rose-500">🔒 Locked</span>
+                </div>
+                <p class="font-bold text-slate-700">"I am a beautiful island in southern Tunisia. I was the 'Tatooine' planet in Star Wars! My white houses and blue sea look like paradise. My famous Deglet Nour dates are the best in the world. What city am I near?"</p>
+                <div class="flex gap-2">
+                    <input type="text" id="clue-input-5" class="flex-1 px-4 py-2 border-2 rounded-xl text-sm font-bold outline-none focus:border-amber-400" placeholder="Type the name...">
+                    <button onclick="verifyClue(5,'tozeur')" class="bg-amber-500 hover:bg-amber-600 text-white font-black px-4 py-2 rounded-xl text-sm transition">Check</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ COLORING TAB ═══════════════ -->
+    <div id="coloring-tab" class="play-tab hidden">
+        <div class="bg-white p-6 md:p-8 rounded-3xl border-4 border-rose-300 shadow space-y-6">
+            <div class="text-center space-y-1">
+                <span class="text-4xl">🎨</span>
+                <h3 class="text-2xl font-black text-slate-900">Digital Coloring Book</h3>
+                <p class="text-slate-600 font-bold text-sm">Choose a Tunisian template and color it with your favorite shades!</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Tools -->
+                <div class="lg:col-span-3 bg-rose-50 p-4 rounded-2xl border-2 border-rose-200 space-y-4">
+                    <h4 class="font-black text-slate-800">🎨 Colors:</h4>
+                    <div class="grid grid-cols-4 gap-2">
+                        <button onclick="setColor('#E10600')" class="w-9 h-9 rounded-full border-2 border-white shadow bg-red-600" title="Red"></button>
+                        <button onclick="setColor('#38BDF8')" class="w-9 h-9 rounded-full border-2 border-white shadow bg-sky-400" title="Blue"></button>
+                        <button onclick="setColor('#FBBF24')" class="w-9 h-9 rounded-full border-2 border-white shadow bg-amber-400" title="Yellow"></button>
+                        <button onclick="setColor('#34D399')" class="w-9 h-9 rounded-full border-2 border-white shadow bg-emerald-400" title="Green"></button>
+                        <button onclick="setColor('#F43F5E')" class="w-9 h-9 rounded-full border-2 border-white shadow bg-rose-500" title="Pink"></button>
+                        <button onclick="setColor('#8B5CF6')" class="w-9 h-9 rounded-full border-2 border-white shadow bg-violet-500" title="Purple"></button>
+                        <button onclick="setColor('#92400E')" class="w-9 h-9 rounded-full border-2 border-white shadow bg-amber-800" title="Brown"></button>
+                        <button onclick="setColor('#FFFFFF')" class="w-9 h-9 rounded-full border-2 border-slate-300 shadow bg-white" title="Eraser"></button>
+                        <button onclick="setColor('#0F172A')" class="w-9 h-9 rounded-full border-2 border-white shadow bg-slate-900" title="Black"></button>
+                        <button onclick="setColor('#F97316')" class="w-9 h-9 rounded-full border-2 border-white shadow bg-orange-500" title="Orange"></button>
+                        <button onclick="setColor('#06B6D4')" class="w-9 h-9 rounded-full border-2 border-white shadow bg-cyan-500" title="Cyan"></button>
+                        <button onclick="setColor('#84CC16')" class="w-9 h-9 rounded-full border-2 border-white shadow bg-lime-500" title="Lime"></button>
+                    </div>
+                    <div>
+                        <h4 class="font-black text-slate-800 mb-2">🖌️ Brush Size:</h4>
+                        <input type="range" id="brush-size" min="2" max="30" value="8" class="w-full accent-rose-500">
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <button onclick="clearCanvas()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-3 rounded-xl text-sm transition"><i class="fas fa-eraser mr-1"></i> Clear All</button>
+                        <button onclick="triggerDownload()" class="bg-rose-500 hover:bg-rose-600 text-white font-bold py-2 px-3 rounded-xl text-sm transition"><i class="fas fa-download mr-1"></i> Save My Drawing</button>
+                    </div>
+                </div>
+                <!-- Canvas -->
+                <div class="lg:col-span-6 flex justify-center items-center">
+                    <div class="border-4 border-dashed border-slate-300 bg-white rounded-2xl overflow-hidden p-2 shadow-inner">
+                        <canvas id="drawing-canvas" width="400" height="400" class="cursor-crosshair bg-white max-w-full touch-none rounded-xl"></canvas>
+                    </div>
+                </div>
+                <!-- Templates -->
+                <div class="lg:col-span-3 bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+                    <h4 class="font-black text-slate-800">✏️ Choose a Template:</h4>
+                    <button onclick="loadTemplate('camel')"    class="w-full p-2 bg-white rounded-xl border hover:border-rose-400 font-bold text-xs flex items-center justify-between transition"><span>Sahara Camel</span><span class="text-xl">🐫</span></button>
+                    <button onclick="loadTemplate('palm')"     class="w-full p-2 bg-white rounded-xl border hover:border-rose-400 font-bold text-xs flex items-center justify-between transition"><span>Oasis Palm Tree</span><span class="text-xl">🌴</span></button>
+                    <button onclick="loadTemplate('pot')"      class="w-full p-2 bg-white rounded-xl border hover:border-rose-400 font-bold text-xs flex items-center justify-between transition"><span>Traditional Pottery</span><span class="text-xl">🏺</span></button>
+                    <button onclick="loadTemplate('star')"     class="w-full p-2 bg-white rounded-xl border hover:border-rose-400 font-bold text-xs flex items-center justify-between transition"><span>Desert Star</span><span class="text-xl">⭐</span></button>
+                    <button onclick="loadTemplate('door')"     class="w-full p-2 bg-white rounded-xl border hover:border-rose-400 font-bold text-xs flex items-center justify-between transition"><span>Berber Doorway</span><span class="text-xl">🚪</span></button>
+                    <button onclick="loadTemplate('ship')"     class="w-full p-2 bg-white rounded-xl border hover:border-rose-400 font-bold text-xs flex items-center justify-between transition"><span>Desert Dune</span><span class="text-xl">🏔️</span></button>
+                    <p class="text-[10px] text-slate-400 font-bold text-center mt-2">Draw with your mouse or finger!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="bg-slate-900 text-white pt-10 pb-6 mt-16 border-t-8 border-yellow-400">
+    <div class="container mx-auto px-4 max-w-5xl text-center">
+        <h4 class="text-xl font-black text-yellow-400 mb-3">Southern Tunisia Explorer 🏜️</h4>
+        <div class="flex flex-wrap gap-2 justify-center text-xs font-bold">
+            <a href="index.html"     class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-lg transition">🏠 Home</a>
+            <a href="decouvrir.html" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-lg transition">🧭 Discover</a>
+            <a href="histoires.html" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-lg transition">📖 Stories</a>
+            <a href="cuisine.html"   class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-lg transition">🍲 Cuisine</a>
+            <a href="parents.html"   class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-lg transition">👪 Parents</a>
+        </div>
+        <p class="text-xs text-slate-500 mt-4">&copy; 2026 — Children's Tourism in Southern Tunisia</p>
+    </div>
+</footer>
+
+<script src="js/app.js"></script>
+<script>
+// ── PLAY SUB-NAV ──
+function switchPlayTab(id) {
+    SoundFX.playClick();
+    document.querySelectorAll('.play-tab').forEach(t => t.classList.remove('active-tab'));
+    document.getElementById(id).classList.add('active-tab');
+    document.querySelectorAll('.play-nav-btn').forEach(b => {
+        b.className = 'play-nav-btn bg-slate-100 text-slate-600 px-5 py-2.5 rounded-xl font-black text-base shadow transition hover:bg-slate-200';
+    });
+    const btnMap = { 'quiz-tab':'btn-quiz', 'hunt-tab':'btn-hunt', 'coloring-tab':'btn-coloring' };
+    const btn = document.getElementById(btnMap[id]);
+    if (btn) btn.className = 'play-nav-btn bg-sky-500 text-white px-5 py-2.5 rounded-xl font-black text-base shadow transition';
+    if (id === 'coloring-tab') setTimeout(initCanvas, 100);
+}
+
+// ── QUIZ DATA ──
+const QuizData = {
+    quiz1: {
+        title: 'History & Culture Quiz 🏰',
+        badge: 'carthage',
+        questions: [
+            { q:'Which village in southern Tunisia has underground cave houses that were filmed as Luke Skywalker\'s home in Star Wars?', choices:['Tozeur','Matmata','Douz'], correct:1 },
+            { q:'What is a "ksar" in southern Tunisia?', choices:['A type of palm tree','An ancient Berber granary fortress','A traditional Tunisian dish'], correct:1 },
+            { q:'What is the famous old brick city in the Tozeur oasis known for its geometric patterns?', choices:['Tozeur Medina','Ksar Ouled Soltane','Chenini'], correct:0 },
+            { q:'Which dramatic hilltop Berber village near Tataouine has stood for over 800 years?', choices:['Matmata','Medenine','Chenini'], correct:2 },
+            { q:'On which island in southern Tunisia can you find ancient Jewish, Islamic, and Roman heritage all in one place?', choices:['Zembra Island','Djerba Island','Kerkennah Island'], correct:1 },
+        ]
+    },
+    quiz2: {
+        title: 'Sahara Nature Quiz 🦁',
+        badge: 'desert',
+        questions: [
+            { q:'What tiny desert animal with enormous ears lives in the Sahara of southern Tunisia?', choices:['Desert Hedgehog','Fennec Fox','Sand Cat'], correct:1 },
+            { q:'What is the nickname of the city of Douz in southern Tunisia?', choices:['City of Dates','Gateway to the Sahara','Pearl of the South'], correct:1 },
+            { q:'What giant salt lake in southern Tunisia looks like a magical mirror and creates amazing mirages?', choices:['Chott el-Jerid','Lake Ichkeul','Sebkha Ariana'], correct:0 },
+            { q:'In which southern Tunisian park can you see rare slender-horned gazelles and ostriches roaming freely?', choices:['Bou Hedma National Park','Feija National Park','Chambi Park'], correct:0 },
+            { q:'What are the famous date variety grown in the oases of Tozeur called?', choices:['Medjool','Ajwa','Deglet Nour'], correct:2 },
+        ]
+    }
+};
+
+let currentQuiz = '', currentQIdx = 0, currentScore = 0;
+
+function startQuiz(key) {
+    SoundFX.playClick();
+    currentQuiz = key;
+    currentQIdx = 0;
+    currentScore = 0;
+    const box = document.getElementById('quiz-play-box');
+    box.classList.remove('hidden');
+    box.scrollIntoView({ behavior:'smooth' });
+    renderQuestion();
+}
+
+function renderQuestion() {
+    const quiz = QuizData[currentQuiz];
+    const q    = quiz.questions[currentQIdx];
+    document.getElementById('quiz-title').innerText    = quiz.title;
+    document.getElementById('quiz-progress').innerText = `Question ${currentQIdx+1} of ${quiz.questions.length}`;
+    document.getElementById('quiz-question-text').innerText = q.q;
+    document.getElementById('quiz-feedback').classList.add('hidden');
+    document.getElementById('quiz-next-btn').classList.add('hidden');
+    const ch = document.getElementById('quiz-choices');
+    ch.innerHTML = '';
+    q.choices.forEach((c, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'w-full text-left p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl font-bold text-slate-700 hover:bg-sky-50 hover:border-sky-400 transition';
+        btn.textContent = c;
+        btn.onclick = () => checkAnswer(i);
+        ch.appendChild(btn);
+    });
+}
+
+function checkAnswer(idx) {
+    const q = QuizData[currentQuiz].questions[currentQIdx];
+    document.querySelectorAll('#quiz-choices button').forEach(b => b.disabled = true);
+    const fb = document.getElementById('quiz-feedback');
+    fb.classList.remove('hidden');
+    if (idx === q.correct) {
+        SoundFX.playSuccess(); currentScore++;
+        addPoints(15); createConfetti();
+        fb.className = 'text-center p-3 rounded-2xl font-black bg-emerald-100 text-emerald-700 border border-emerald-300';
+        fb.innerHTML = '🎉 Correct! Great answer! +15 points!';
+    } else {
+        SoundFX.playWrong();
+        fb.className = 'text-center p-3 rounded-2xl font-black bg-rose-100 text-rose-700 border border-rose-300';
+        fb.innerHTML = `😢 Wrong! The correct answer was: "<strong>${q.choices[q.correct]}</strong>"`;
+    }
+    document.getElementById('quiz-next-btn').classList.remove('hidden');
+}
+
+function nextQuestion() {
+    SoundFX.playClick();
+    const quiz = QuizData[currentQuiz];
+    if (currentQIdx < quiz.questions.length - 1) {
+        currentQIdx++;
+        renderQuestion();
+    } else {
+        const fb = document.getElementById('quiz-feedback');
+        fb.className = 'text-center p-6 rounded-3xl font-black bg-indigo-100 text-indigo-700 border border-indigo-300 space-y-2';
+        fb.innerHTML = `<p class="text-2xl">🏆 Quiz Complete!</p><p>Your score: ${currentScore} / ${quiz.questions.length}</p>`;
+        fb.classList.remove('hidden');
+        document.getElementById('quiz-next-btn').classList.add('hidden');
+        document.getElementById('quiz-choices').innerHTML = '';
+        if (currentScore === quiz.questions.length) awardBadge(quiz.badge);
+    }
+}
+
+// ── TREASURE HUNT ──
+function verifyClue(id, answer) {
+    const val = document.getElementById(`clue-input-${id}`).value.trim().toLowerCase();
+    const st  = document.getElementById(`clue-status-${id}`);
+    const con = document.getElementById(`clue-container-${id}`);
+    if (val.includes(answer)) {
+        SoundFX.playSuccess();
+        st.innerHTML = '🟢 Solved!'; st.className = 'text-xs font-bold text-emerald-500';
+        con.classList.add('bg-emerald-50','border-emerald-300');
+        addSolvedClue(id);
+        addPoints(10);
+        showCustomMessage(`🎉 Riddle ${id} solved! +10 points!`);
+        if (AppState.solvedClues.length >= 5) awardBadge('explorer');
+    } else {
+        SoundFX.playWrong();
+        showCustomMessage('❌ Wrong answer! Think again, explorer!');
+    }
+}
+
+// ── CANVAS COLORING ──
+let canvas, ctx, isDrawing = false, activeColor = '#E10600', currentTemplate = 'camel';
+
+function initCanvas() {
+    canvas = document.getElementById('drawing-canvas');
+    if (!canvas || canvas._init) return;
+    canvas._init = true;
+    ctx = canvas.getContext('2d');
+    ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    canvas.addEventListener('mousedown', e => { isDrawing=true; ctx.beginPath(); ctx.moveTo(e.offsetX,e.offsetY); });
+    canvas.addEventListener('mousemove', e => { if(!isDrawing) return; draw(e.offsetX,e.offsetY); });
+    canvas.addEventListener('mouseup',   () => isDrawing=false);
+    canvas.addEventListener('mouseout',  () => isDrawing=false);
+    canvas.addEventListener('touchstart', e => { e.preventDefault(); const r=canvas.getBoundingClientRect(),t=e.touches[0]; isDrawing=true; ctx.beginPath(); ctx.moveTo(t.clientX-r.left,t.clientY-r.top); }, {passive:false});
+    canvas.addEventListener('touchmove',  e => { e.preventDefault(); if(!isDrawing) return; const r=canvas.getBoundingClientRect(),t=e.touches[0]; draw(t.clientX-r.left,t.clientY-r.top); }, {passive:false});
+    canvas.addEventListener('touchend',   () => isDrawing=false);
+    loadTemplate('camel');
+}
+
+function draw(x, y) {
+    ctx.strokeStyle = activeColor;
+    ctx.lineWidth = document.getElementById('brush-size').value;
+    ctx.lineTo(x, y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x, y);
+}
+
+function setColor(c) { SoundFX.playClick(); activeColor = c; awardBadge('artist'); }
+
+function clearCanvas() {
+    SoundFX.playClick();
+    ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0,0,canvas.width,canvas.height);
+    redrawTemplate();
+}
+
+function loadTemplate(t) {
+    SoundFX.playClick();
+    currentTemplate = t;
+    ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0,0,canvas.width,canvas.height);
+    redrawTemplate();
+}
+
+function redrawTemplate() {
+    ctx.strokeStyle = '#CCCCCC'; ctx.lineWidth = 3;
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0,0,W,H); ctx.fillStyle='#fff'; ctx.fillRect(0,0,W,H);
+    if (currentTemplate === 'camel') {
+        ctx.beginPath();
+        ctx.arc(W*.66,H*.3,22,0,Math.PI*2);
+        ctx.moveTo(W*.62,H*.35); ctx.quadraticCurveTo(W*.47,H*.5,W*.37,H*.44);
+        ctx.arc(W*.35,H*.44,38,0,Math.PI);
+        ctx.moveTo(W*.28,H*.56); ctx.lineTo(W*.28,H*.82);
+        ctx.moveTo(W*.42,H*.56); ctx.lineTo(W*.42,H*.82);
+        ctx.moveTo(W*.6,H*.56);  ctx.lineTo(W*.6,H*.82);
+        ctx.moveTo(W*.74,H*.56); ctx.lineTo(W*.74,H*.82);
+        ctx.stroke();
+    } else if (currentTemplate === 'palm') {
+        ctx.beginPath();
+        ctx.moveTo(W/2,H*.9); ctx.quadraticCurveTo(W*.48,H*.55,W/2,H*.22);
+        ctx.moveTo(W/2,H*.22); ctx.quadraticCurveTo(W*.3,H*.05,W*.2,H*.18);
+        ctx.moveTo(W/2,H*.22); ctx.quadraticCurveTo(W*.7,H*.05,W*.8,H*.18);
+        ctx.moveTo(W/2,H*.28); ctx.quadraticCurveTo(W*.25,H*.2,W*.18,H*.32);
+        ctx.moveTo(W/2,H*.28); ctx.quadraticCurveTo(W*.75,H*.2,W*.82,H*.32);
+        ctx.moveTo(W*.4,H*.9); ctx.lineTo(W*.6,H*.9);
+        ctx.stroke();
+    } else if (currentTemplate === 'pot') {
+        ctx.beginPath(); ctx.arc(W/2,H*.58,80,0,Math.PI*2);
+        ctx.moveTo(W/2-30,H*.36); ctx.lineTo(W/2+30,H*.36); ctx.lineTo(W/2+25,H*.27); ctx.lineTo(W/2-25,H*.27); ctx.closePath();
+        ctx.moveTo(W*.3,H*.58); ctx.quadraticCurveTo(W*.18,H*.48,W*.37,H*.42);
+        ctx.moveTo(W*.7,H*.58); ctx.quadraticCurveTo(W*.82,H*.48,W*.63,H*.42);
+        ctx.stroke();
+    } else if (currentTemplate === 'star') {
+        const cx=W/2, cy=H/2, or=130, ir=55, pts=8;
+        ctx.beginPath();
+        for (let i=0;i<pts*2;i++) {
+            const r=i%2===0?or:ir, a=(i*Math.PI/pts)-Math.PI/2;
+            i===0?ctx.moveTo(cx+r*Math.cos(a),cy+r*Math.sin(a)):ctx.lineTo(cx+r*Math.cos(a),cy+r*Math.sin(a));
+        }
+        ctx.closePath(); ctx.stroke();
+    } else if (currentTemplate === 'door') {
+        ctx.beginPath();
+        ctx.rect(W*.2,H*.15,W*.6,H*.75);
+        ctx.moveTo(W*.2,H*.4); ctx.arc(W*.5,H*.4,W*.3,Math.PI,0);
+        ctx.moveTo(W*.32,H*.6); ctx.lineTo(W*.32,H*.85);
+        ctx.moveTo(W*.68,H*.6); ctx.lineTo(W*.68,H*.85);
+        ctx.moveTo(W*.45,H*.55); ctx.arc(W*.5,H*.55,5,0,Math.PI*2);
+        ctx.stroke();
+    } else if (currentTemplate === 'ship') {
+        // Desert dune shape
+        ctx.beginPath();
+        ctx.moveTo(20, H*.75);
+        ctx.quadraticCurveTo(W*.25, H*.2, W*.5, H*.4);
+        ctx.quadraticCurveTo(W*.75, H*.6, W-20, H*.55);
+        ctx.moveTo(20, H*.85);
+        ctx.quadraticCurveTo(W*.3, H*.45, W*.6, H*.6);
+        ctx.quadraticCurveTo(W*.8, H*.7, W-20, H*.65);
+        ctx.stroke();
+    }
+}
+
+function triggerDownload() {
+    SoundFX.playClick();
+    const link = document.createElement('a');
+    link.download = 'my-southern-tunisia-drawing.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    showCustomMessage('🖼️ Your amazing drawing has been saved!');
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    AppState.solvedClues.forEach(id => {
+        const st = document.getElementById(`clue-status-${id}`);
+        const con = document.getElementById(`clue-container-${id}`);
+        if (st) { st.innerHTML='🟢 Solved!'; st.className='text-xs font-bold text-emerald-500'; }
+        if (con) con.classList.add('bg-emerald-50','border-emerald-300');
+    });
+});
+</script>
+</body>
+</html>

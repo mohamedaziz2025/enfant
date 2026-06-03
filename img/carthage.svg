@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#87CEEB"/>
+      <stop offset="100%" stop-color="#E0F4FF"/>
+    </linearGradient>
+    <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1E90FF"/>
+      <stop offset="100%" stop-color="#006994"/>
+    </linearGradient>
+  </defs>
+  <!-- Sky -->
+  <rect width="600" height="400" fill="url(#sky)"/>
+  <!-- Sun -->
+  <circle cx="500" cy="70" r="40" fill="#FFD700" opacity="0.9"/>
+  <circle cx="500" cy="70" r="50" fill="#FFD700" opacity="0.3"/>
+  <!-- Sea -->
+  <ellipse cx="300" cy="400" rx="320" ry="130" fill="url(#sea)"/>
+  <!-- Wave lines -->
+  <path d="M 0 310 Q 75 295 150 310 Q 225 325 300 310 Q 375 295 450 310 Q 525 325 600 310" stroke="white" stroke-width="2" fill="none" opacity="0.5"/>
+  <path d="M 0 330 Q 75 315 150 330 Q 225 345 300 330 Q 375 315 450 330 Q 525 345 600 330" stroke="white" stroke-width="2" fill="none" opacity="0.5"/>
+  <!-- Ground/ruins base -->
+  <rect x="0" y="270" width="600" height="50" fill="#C2956C"/>
+  <rect x="0" y="285" width="600" height="35" fill="#D4A76A"/>
+  <!-- Roman columns -->
+  <!-- Column 1 -->
+  <rect x="80" y="140" width="28" height="140" fill="#E8D5B0"/>
+  <rect x="75" y="130" width="38" height="18" fill="#D4B896"/>
+  <rect x="72" y="270" width="44" height="18" fill="#D4B896"/>
+  <rect x="70" y="120" width="48" height="15" fill="#C8A882"/>
+  <!-- Column 2 -->
+  <rect x="150" y="100" width="28" height="175" fill="#E8D5B0"/>
+  <rect x="145" y="90" width="38" height="18" fill="#D4B896"/>
+  <rect x="142" y="270" width="44" height="18" fill="#D4B896"/>
+  <rect x="140" y="80" width="48" height="15" fill="#C8A882"/>
+  <!-- Column 3 (broken) -->
+  <rect x="220" y="160" width="28" height="115" fill="#E8D5B0"/>
+  <rect x="215" y="150" width="38" height="18" fill="#D4B896"/>
+  <!-- Column 4 -->
+  <rect x="290" y="110" width="28" height="162" fill="#E8D5B0"/>
+  <rect x="285" y="100" width="38" height="18" fill="#D4B896"/>
+  <rect x="282" y="268" width="44" height="18" fill="#D4B896"/>
+  <rect x="280" y="90" width="48" height="15" fill="#C8A882"/>
+  <!-- Column 5 -->
+  <rect x="360" y="130" width="28" height="142" fill="#E8D5B0"/>
+  <rect x="355" y="120" width="38" height="18" fill="#D4B896"/>
+  <rect x="352" y="268" width="44" height="18" fill="#D4B896"/>
+  <!-- Arch connecting cols 4-5 -->
+  <path d="M 290 110 Q 333 50 388 130" stroke="#D4B896" stroke-width="22" fill="none"/>
+  <!-- Rubble -->
+  <ellipse cx="200" cy="278" rx="25" ry="8" fill="#C2956C"/>
+  <ellipse cx="430" cy="275" rx="18" ry="6" fill="#C2956C"/>
+  <rect x="440" y="262" width="40" height="15" rx="3" fill="#D4B896"/>
+  <!-- Label -->
+  <rect x="150" y="355" width="300" height="36" rx="8" fill="#1E3A5F" opacity="0.75"/>
+  <text x="300" y="379" text-anchor="middle" font-family="Cairo, Arial" font-size="18" fill="white" font-weight="bold">قرطاج العريقة</text>
+</svg>

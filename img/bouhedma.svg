@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+  <defs>
+    <linearGradient id="skyBH" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#87CEEB"/>
+      <stop offset="100%" stop-color="#E8F4FF"/>
+    </linearGradient>
+    <linearGradient id="gndBH" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#C8A850"/>
+      <stop offset="100%" stop-color="#A0782A"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="400" fill="url(#skyBH)"/>
+  <!-- Sun -->
+  <circle cx="520" cy="70" r="40" fill="#FFD700" opacity="0.9"/>
+  <!-- Ground savanna -->
+  <path d="M 0 280 Q 200 255 400 270 Q 500 278 600 260 L 600 400 L 0 400 Z" fill="url(#gndBH)"/>
+  <!-- Dry grass tufts -->
+  <g stroke="#D4A820" stroke-width="2" fill="none">
+    <line x1="50" y1="280" x2="45" y2="265"/><line x1="55" y1="280" x2="53" y2="263"/><line x1="60" y1="280" x2="58" y2="266"/>
+    <line x1="150" y1="275" x2="145" y2="260"/><line x1="155" y1="275" x2="153" y2="258"/><line x1="160" y1="275" x2="158" y2="261"/>
+    <line x1="500" y1="268" x2="495" y2="253"/><line x1="505" y1="268" x2="503" y2="251"/><line x1="510" y1="268" x2="508" y2="254"/>
+  </g>
+  <!-- ACACIA TREES (flat-topped characteristic) -->
+  <!-- Tree 1 (large) -->
+  <rect x="96" y="170" width="8" height="110" fill="#8B6914"/>
+  <!-- Branches -->
+  <line x1="100" y1="200" x2="65" y2="180" stroke="#8B6914" stroke-width="5"/>
+  <line x1="100" y1="190" x2="135" y2="175" stroke="#8B6914" stroke-width="5"/>
+  <line x1="100" y1="210" x2="55" y2="195" stroke="#8B6914" stroke-width="4"/>
+  <line x1="100" y1="205" x2="145" y2="185" stroke="#8B6914" stroke-width="4"/>
+  <!-- Flat canopy -->
+  <ellipse cx="100" cy="168" rx="75" ry="22" fill="#5A8A3A"/>
+  <ellipse cx="100" cy="162" rx="65" ry="15" fill="#6A9A4A"/>
+  <!-- Tree 2 (medium) -->
+  <rect x="430" y="190" width="7" height="90" fill="#8B6914"/>
+  <line x1="433" y1="215" x2="400" y2="200" stroke="#8B6914" stroke-width="4"/>
+  <line x1="433" y1="210" x2="460" y2="195" stroke="#8B6914" stroke-width="4"/>
+  <ellipse cx="433" cy="190" rx="60" ry="18" fill="#5A8A3A"/>
+  <ellipse cx="433" cy="185" rx="50" ry="12" fill="#6A9A4A"/>
+  <!-- Tree 3 (small, background) -->
+  <rect x="530" y="210" width="5" height="65" fill="#8B6914"/>
+  <ellipse cx="532" cy="208" rx="38" ry="14" fill="#4A7A2A"/>
+  <!-- GAZELLE (Addax/Gazelle Dorcas) -->
+  <g transform="translate(280,235)">
+    <!-- Body -->
+    <ellipse cx="0" cy="10" rx="38" ry="20" fill="#D4A853"/>
+    <!-- White belly -->
+    <ellipse cx="0" cy="18" rx="28" ry="12" fill="#F5E8C0"/>
+    <!-- Neck -->
+    <path d="M -20 -5 Q -28 -25 -25 -40" stroke="#D4A853" stroke-width="14" fill="none" stroke-linecap="round"/>
+    <!-- Head -->
+    <ellipse cx="-28" cy="-42" rx="14" ry="11" fill="#D4A853"/>
+    <!-- White face markings -->
+    <path d="M -38 -40 Q -32 -35 -26 -38" stroke="white" stroke-width="3" fill="none"/>
+    <!-- Eye -->
+    <circle cx="-33" cy="-44" r="3" fill="#2C1810"/>
+    <circle cx="-32" cy="-45" r="1.2" fill="white"/>
+    <!-- Nose -->
+    <ellipse cx="-40" cy="-38" rx="4" ry="3" fill="#C49040"/>
+    <!-- Horns (curved back) -->
+    <path d="M -22 -52 Q -15 -80 -18 -90" stroke="#5A3A10" stroke-width="3" fill="none"/>
+    <path d="M -26 -52 Q -20 -78 -23 -88" stroke="#5A3A10" stroke-width="3" fill="none"/>
+    <!-- Legs -->
+    <rect x="-28" y="26" width="7" height="38" rx="3" fill="#C49040"/>
+    <rect x="-12" y="26" width="7" height="40" rx="3" fill="#C49040"/>
+    <rect x="8" y="26" width="7" height="36" rx="3" fill="#C49040"/>
+    <rect x="24" y="26" width="7" height="38" rx="3" fill="#C49040"/>
+    <!-- Hooves -->
+    <ellipse cx="-24" cy="64" rx="5" ry="3" fill="#5A3A10"/>
+    <ellipse cx="-8" cy="66" rx="5" ry="3" fill="#5A3A10"/>
+    <ellipse cx="11" cy="62" rx="5" ry="3" fill="#5A3A10"/>
+    <ellipse cx="27" cy="64" rx="5" ry="3" fill="#5A3A10"/>
+    <!-- Tail -->
+    <path d="M 38 5 Q 50 0 48 12" stroke="#D4A853" stroke-width="3" fill="none"/>
+  </g>
+  <!-- Second smaller gazelle in distance -->
+  <g transform="translate(460,265) scale(0.6)">
+    <ellipse cx="0" cy="10" rx="38" ry="20" fill="#D4A853"/>
+    <path d="M -20 -5 Q -28 -25 -25 -40" stroke="#D4A853" stroke-width="14" fill="none" stroke-linecap="round"/>
+    <ellipse cx="-28" cy="-42" rx="14" ry="11" fill="#D4A853"/>
+    <path d="M -22 -52 Q -15 -75 -18 -85" stroke="#5A3A10" stroke-width="3" fill="none"/>
+    <rect x="-28" y="26" width="7" height="35" rx="3" fill="#C49040"/>
+    <rect x="-12" y="26" width="7" height="37" rx="3" fill="#C49040"/>
+    <rect x="8" y="26" width="7" height="33" rx="3" fill="#C49040"/>
+    <rect x="24" y="26" width="7" height="35" rx="3" fill="#C49040"/>
+  </g>
+  <!-- Label -->
+  <rect x="145" y="355" width="310" height="36" rx="8" fill="#5A3010" opacity="0.85"/>
+  <text x="300" y="379" text-anchor="middle" font-family="Cairo, Arial" font-size="18" fill="#FFD700" font-weight="bold">محمية بوهدمة - الغزلان</text>
+</svg>

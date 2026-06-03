@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مكتشف تونس الصغير - مشروع سياحة الأطفال التفاعلي</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Cairo & Tajawal -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Tailwind Configuration for Kid-friendly Themes -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                        tajawal: ['Tajawal', 'sans-serif'],
+                    },
+                    colors: {
+                        tunisRed: '#E10600',
+                        skyBlue: '#38BDF8',
+                        sunnyYellow: '#FBBF24',
+                        jungleGreen: '#34D399',
+                        seaBlue: '#0284C7',
+                        clayTerracotta: '#F43F5E',
+                    },
+                    animation: {
+                        'bounce-slow': 'bounce 3s infinite',
+                        'wiggle': 'wiggle 1s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        wiggle: {
+                            '0%, 100%': { transform: 'rotate(-3deg)' },
+                            '50%': { transform: 'rotate(3deg)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Cairo', 'Tajawal', sans-serif;
+            background-color: #F0FDFA; /* Soft Mint Green background for kids */
+        }
+        .wood-border {
+            border: 8px solid #854D0E;
+            border-radius: 24px;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F0FDFA;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #38BDF8;
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0284C7;
+        }
+        /* Confetti Effect style */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: confettiFall 2.5s linear infinite;
+        }
+        @keyframes confettiFall {
+            0% { transform: translateY(-50px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden text-slate-800 selection:bg-sunnyYellow selection:text-slate-900">
+
+    <script>
+        // Simple Audio Synthesizer for Interactive Kids Sound Effects (No external assets required!)
+        const SoundFX = {
+            ctx: null,
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            },
+            playClick() {
+                this.init();
+                if (!this.ctx) return;
+                let osc = this.ctx.createOscillator();
+                let gain = this.ctx.createGain();
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.1);
+            },
+            playSuccess() {
+                this.init();
+                if (!this.ctx) return;
+                let now = this.ctx.currentTime;
+                let notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                notes.forEach((freq, index) => {
+                    let osc = this.ctx.createOscillator();
+                    let gain = this.ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + index * 0.08);
+                    gain.gain.setValueAtTime(0.2, now + index * 0.08);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + index * 0.08 + 0.2);
+                    osc.start(now + index * 0.08);
+                    osc.stop(now + index * 0.08 + 0.2);
+                });
+            },
+            playWrong() {
+                this.init();
+                if (!this.ctx) return;
+                let osc = this.ctx.createOscillator();
+                let gain = this.ctx.createGain();
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, this.ctx.currentTime);
+                osc.frequency.linearRampToValueAtTime(110, this.ctx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.3);
+            },
+            playBadge() {
+                this.init();
+                if (!this.ctx) return;
+                let now = this.ctx.currentTime;
+                let notes = [587.33, 659.25, 698.46, 783.99, 880.00, 987.77, 1046.50]; // Ascent scale
+                notes.forEach((freq, index) => {
+                    let osc = this.ctx.createOscillator();
+                    let gain = this.ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now + index * 0.06);
+                    gain.gain.setValueAtTime(0.15, now + index * 0.06);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + index * 0.06 + 0.25);
+                    osc.start(now + index * 0.06);
+                    osc.stop(now + index * 0.06 + 0.25);
+                });
+            }
+        };
+
+        // App state variables
+        const AppState = {
+            avatar: localStorage.getItem('tunis_explorer_avatar') || '',
+            avatarName: localStorage.getItem('tunis_explorer_avatar_name') || 'البطل الصغير',
+            points: parseInt(localStorage.getItem('tunis_explorer_points')) || 0,
+            badges: JSON.parse(localStorage.getItem('tunis_explorer_badges')) || [],
+            currentTab: 'home',
+            solvedClues: JSON.parse(localStorage.getItem('tunis_explorer_clues')) || [],
+            selectedRegion: 'north',
+            quizState: {
+                quiz1: { current: 0, score: 0, completed: false },
+                quiz2: { current: 0, score: 0, completed: false }
+            }
+        };
+
+        function saveState() {
+            localStorage.setItem('tunis_explorer_avatar', AppState.avatar);
+            localStorage.setItem('tunis_explorer_avatar_name', AppState.avatarName);
+            localStorage.setItem('tunis_explorer_points', AppState.points);
+            localStorage.setItem('tunis_explorer_badges', JSON.stringify(AppState.badges));
+            localStorage.setItem('tunis_explorer_clues', JSON.stringify(AppState.solvedClues));
+        }
+    </script>
+
+    <!-- Top Playful Clouds and Navigation -->
+    <header class="bg-gradient-to-b from-skyBlue to-sky-300 pb-6 relative overflow-hidden shadow-lg border-b-4 border-dashed border-sky-400">
+        <!-- Floating Clouds Animation Elements -->
+        <div class="absolute top-4 left-6 text-white text-4xl opacity-40 animate-bounce-slow"><i class="fas fa-cloud"></i></div>
+        <div class="absolute top-12 right-12 text-white text-5xl opacity-30 animate-pulse-slow"><i class="fas fa-cloud"></i></div>
+        <div class="absolute -bottom-6 left-1/3 text-white text-6xl opacity-20"><i class="fas fa-cloud"></i></div>
+        
+        <div class="container mx-auto px-4 pt-4 flex flex-col md:flex-row justify-between items-center relative z-10">
+            <!-- Brand Logo -->
+            <div class="flex items-center space-x-3 space-x-reverse cursor-pointer" onclick="switchTab('home'); SoundFX.playClick();">
+                <div class="bg-white p-3 rounded-full shadow-md border-4 border-sunnyYellow transform hover:scale-110 transition duration-300">
+                    <span class="text-3xl">🇹🇳</span>
+                </div>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-black text-slate-900 tracking-wide font-tajawal drop-shadow">مُكْتَشِفْ تُونِسْ الصَّغِيرْ</h1>
+                    <p class="text-sm font-bold text-slate-700">تونس بعيون صغيرة 🌍 سياحة، تعلّم ومرح!</p>
+                </div>
+            </div>
+
+            <!-- Gamified Stats & Active Avatar Status -->
+            <div class="flex flex-wrap items-center justify-center gap-4 mt-4 md:mt-0">
+                <!-- Points Counter -->
+                <div class="bg-amber-100 border-2 border-amber-400 px-4 py-2 rounded-full flex items-center space-x-2 space-x-reverse shadow-inner transform hover:scale-105 transition">
+                    <span class="text-2xl animate-spin">⭐</span>
+                    <div>
+                        <div class="text-xs text-amber-800 font-bold">نقاط الاكتشاف</div>
+                        <div class="text-lg font-black text-amber-600" id="header-points">0</div>
+                    </div>
+                </div>
+
+                <!-- Active Avatar Status -->
+                <div id="avatar-status" class="bg-white border-2 border-teal-400 px-4 py-1 rounded-full flex items-center space-x-2 space-x-reverse shadow cursor-pointer" onclick="openAvatarSelector()">
+                    <!-- Render dynamic avatar later -->
+                </div>
+                
+                <!-- Reset Button -->
+                <button onclick="resetAdventure()" class="text-xs bg-red-100 hover:bg-red-200 text-red-700 px-2.5 py-1.5 rounded-lg border border-red-300 font-bold transition">
+                    <i class="fas fa-redo-alt ml-1"></i> إعادة المغامرة
+                </button>
+            </div>
+        </div>
+
+        <!-- Playful Navigation Tabs -->
+        <nav class="container mx-auto px-4 mt-6 relative z-10">
+            <div class="flex flex-wrap gap-2 justify-center bg-white/80 p-2 rounded-2xl shadow border-2 border-white max-w-4xl mx-auto">
+                <button id="nav-home" onclick="switchTab('home')" class="nav-btn active flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-lg transition duration-200 hover:bg-sunnyYellow/30">
+                    <span>🏠</span> الرئيسية
+                </button>
+                <button id="nav-discover" onclick="switchTab('discover')" class="nav-btn flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-lg transition duration-200 hover:bg-sunnyYellow/30">
+                    <span>🧭</span> اكتشف بلادك
+                </button>
+                <button id="nav-play" onclick="switchTab('play')" class="nav-btn flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-lg transition duration-200 hover:bg-sunnyYellow/30">
+                    <span>🎮</span> العب وتحدّى
+                </button>
+                <button id="nav-parents" onclick="switchTab('parents')" class="nav-btn flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-lg transition duration-200 hover:bg-sunnyYellow/30">
+                    <span>👪</span> دليل الأولياء
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 max-w-6xl">
+        
+        <!-- ================= SECTION 0: AVATAR SELECTION DIALOG ================= -->
+        <div id="avatar-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity p-4">
+            <div class="bg-white rounded-3xl p-6 md:p-8 max-w-2xl w-full border-8 border-sunnyYellow shadow-2xl relative overflow-y-auto max-h-[90vh]">
+                <div class="absolute -top-6 -left-6 text-6xl transform -rotate-12 animate-bounce-slow">🎈</div>
+                <div class="absolute -bottom-6 -right-6 text-6xl transform rotate-12">🎠</div>
+                
+                <h2 class="text-2xl md:text-3xl font-black text-center text-slate-900 mb-2 font-tajawal">مرحباً بك يا بطل! اختر رفيق رحلتك في تونس 🇹🇳</h2>
+                <p class="text-center text-slate-600 font-bold mb-6">هذه الشخصية ستمثلك طوال مغامراتنا وستجمع معك الأوسمة النادرة!</p>
+                
+                <div class="mb-6">
+                    <label class="block text-right font-black text-slate-800 mb-2">اكتب اسمك البطل هنا:</label>
+                    <input type="text" id="avatar-input-name" class="w-full px-4 py-3 rounded-xl border-4 border-skyBlue text-lg font-bold text-slate-700 outline-none focus:border-sunnyYellow transition" placeholder="مثال: يوسف، سارة، أحمد..." value="">
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+                    <!-- Avatar 1: Young Hannibal -->
+                    <div onclick="selectAvatarOption('hannibal')" id="opt-hannibal" class="avatar-option border-4 border-slate-200 rounded-2xl p-4 cursor-pointer text-center hover:bg-sky-50 transition transform hover:-translate-y-1">
+                        <div class="text-5xl mb-2">🛡️</div>
+                        <h4 class="font-black text-slate-800 text-sm md:text-base">حنّبعل الصغير</h4>
+                        <span class="text-xs text-slate-500 font-bold">بطل مغامر وقائد شجاع</span>
+                    </div>
+
+                    <!-- Avatar 2: Jasmin Flower -->
+                    <div onclick="selectAvatarOption('jasmine')" id="opt-jasmine" class="avatar-option border-4 border-slate-200 rounded-2xl p-4 cursor-pointer text-center hover:bg-sky-50 transition transform hover:-translate-y-1">
+                        <div class="text-5xl mb-2">🌸</div>
+                        <h4 class="font-black text-slate-800 text-sm md:text-base">ياسمينة الجميلة</h4>
+                        <span class="text-xs text-slate-500 font-bold">ذكية ولطيفة تحب الطبيعة</span>
+                    </div>
+
+                    <!-- Avatar 3: Fennec Fox -->
+                    <div onclick="selectAvatarOption('fennec')" id="opt-fennec" class="avatar-option border-4 border-slate-200 rounded-2xl p-4 cursor-pointer text-center hover:bg-sky-50 transition transform hover:-translate-y-1">
+                        <div class="text-5xl mb-2">🦊</div>
+                        <h4 class="font-black text-slate-800 text-sm md:text-base">فنك الصحراء</h4>
+                        <span class="text-xs text-slate-500 font-bold">سريع الحركة ومحب للاستكشاف</span>
+                    </div>
+
+                    <!-- Avatar 4: Carthage Sailor -->
+                    <div onclick="selectAvatarOption('sailor')" id="opt-sailor" class="avatar-option border-4 border-slate-200 rounded-2xl p-4 cursor-pointer text-center hover:bg-sky-50 transition transform hover:-translate-y-1">
+                        <div class="text-5xl mb-2">⛵</div>
+                        <h4 class="font-black text-slate-800 text-sm md:text-base">بحّار قرطاج</h4>
+                        <span class="text-xs text-slate-500 font-bold">يعشق البحر والبحث عن الكنوز</span>
+                    </div>
+                </div>
+
+                <div class="flex justify-center">
+                    <button onclick="confirmAvatarSelection()" class="bg-jungleGreen hover:bg-emerald-500 text-white font-black text-xl px-12 py-4 rounded-2xl shadow-lg border-b-4 border-emerald-700 transition transform active:scale-95">
+                        انطلاق المغامرة! 🚀
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SECTION 1: HOME PAGE (الرئيسية) ================= -->
+        <section id="tab-home" class="tab-content block space-y-8">
+            
+            <!-- Welcome Hero Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center bg-white p-6 md:p-8 rounded-3xl shadow-md border-4 border-skyBlue/30 relative overflow-hidden">
+                <div class="absolute -top-12 -left-12 bg-sunnyYellow/10 w-48 h-48 rounded-full pointer-events-none"></div>
+                <div class="absolute -bottom-12 -right-12 bg-tunisRed/5 w-64 h-64 rounded-full pointer-events-none"></div>
+                
+                <div class="lg:col-span-7 space-y-4">
+                    <span class="bg-tunisRed/10 text-tunisRed font-black text-sm px-4 py-1.5 rounded-full inline-block">🎓 فكرة مشروع تخرّج هادفة ومميزة</span>
+                    <h2 class="text-3xl md:text-4xl font-black text-slate-900 leading-tight">
+                        مرحباً بك في وطننا الرائع! <br>
+                        <span class="text-sky-500">جاهز لاكتشاف تونس الساحرة؟</span>
+                    </h2>
+                    <p class="text-slate-600 font-semibold leading-relaxed text-lg">
+                        هل تبحث عن المغامرة والتحدي؟ انضم إلينا اليوم في رحلة تفاعلية رائعة عبر تاريخ تونس، طبيعتها الخلابة، معالمها الأثرية، وشواطئها الجميلة. العب، تعلم، وحلّ المسابقات لتربح أوسمة المكتشفين الذهبية!
+                    </p>
+                    <div class="flex flex-wrap gap-3 pt-2">
+                        <button onclick="switchTab('discover'); SoundFX.playClick();" class="bg-sunnyYellow hover:bg-amber-400 text-slate-900 font-black text-base md:text-lg px-8 py-3.5 rounded-2xl shadow-md border-b-4 border-amber-600 transition">
+                            <i class="fas fa-compass ml-2"></i>ابدأ الاستكشاف الآن
+                        </button>
+                        <button onclick="switchTab('play'); SoundFX.playClick();" class="bg-skyBlue hover:bg-sky-400 text-white font-black text-base md:text-lg px-8 py-3.5 rounded-2xl shadow-md border-b-4 border-sky-600 transition">
+                            <i class="fas fa-gamepad ml-2"></i>العب واختبر معلوماتك
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Kid Character and Intro Video Simulation -->
+                <div class="lg:col-span-5 flex flex-col items-center justify-center relative">
+                    <div class="bg-rose-50 border-4 border-dashed border-rose-300 rounded-3xl p-6 w-full text-center relative shadow-inner">
+                        <div class="absolute -top-4 right-4 bg-rose-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow">شاهد الترحيب 🎥</div>
+                        <div class="w-full aspect-video rounded-2xl bg-slate-900 flex items-center justify-center text-white relative overflow-hidden group">
+                            <!-- Placeholder image representing Tunisian kid travel show -->
+                            <img src="https://placehold.co/600x400/0284c7/ffffff?text=Tunis+Kids+Intro" class="w-full h-full object-cover opacity-80" alt="سياحة الأطفال">
+                            <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                <button onclick="playIntroVideo()" class="bg-tunisRed text-white p-5 rounded-full text-2xl hover:scale-125 transition duration-300 shadow-lg border-2 border-white">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-sm font-bold text-slate-500 mt-3">فيديو كرتوني تفاعلي قصير يرحب بالأطفال!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Map Section -->
+            <div class="bg-white p-6 md:p-8 rounded-3xl shadow-md border-4 border-sunnyYellow/40 space-y-6">
+                <div class="text-center max-w-2xl mx-auto space-y-2">
+                    <span class="text-4xl">🗺️</span>
+                    <h3 class="text-2xl font-black text-slate-900">الخريطة الكرتونية التفاعلية لتونس</h3>
+                    <p class="text-slate-600 font-bold">اضغط على أي جزء من تونس لتتعرف على أهم الكنوز السياحية والحيوانات الجميلة هناك!</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                    <!-- Interactive Map Component -->
+                    <div class="lg:col-span-5 flex justify-center">
+                        <div class="relative w-72 h-[480px] bg-sky-50 rounded-3xl border-4 border-sky-200 shadow-inner p-4 flex items-center justify-center">
+                            <!-- Background Elements -->
+                            <div class="absolute top-4 left-4 text-xs font-black text-blue-500 opacity-60">البحر الأبيض المتوسط 🌊</div>
+                            <div class="absolute bottom-16 right-4 text-xs font-black text-amber-600 opacity-60">الصحراء الكبرى 🐫</div>
+                            
+                            <!-- Stylized SVG Map of Tunisia -->
+                            <svg viewBox="0 0 200 450" class="w-full h-full drop-shadow-md">
+                                <!-- North Region -->
+                                <path id="map-path-north" d="M 100,50 C 130,40 160,80 150,110 C 120,130 90,120 70,100 C 60,80 70,60 100,50 Z" 
+                                    class="fill-emerald-300 hover:fill-emerald-400 stroke-emerald-600 stroke-2 cursor-pointer transition duration-200"
+                                    onclick="selectMapRegion('north')"></path>
+                                <!-- Sahel / Center East -->
+                                <path id="map-path-sahel" d="M 150,110 C 170,120 180,160 170,190 C 150,210 130,210 120,170 C 115,140 130,120 150,110 Z" 
+                                    class="fill-sunnyYellow hover:fill-amber-400 stroke-amber-600 stroke-2 cursor-pointer transition duration-200"
+                                    onclick="selectMapRegion('sahel')"></path>
+                                <!-- West / Northwest Mountains -->
+                                <path id="map-path-west" d="M 70,100 C 90,120 120,170 110,210 C 90,230 60,210 50,170 C 40,130 50,110 70,100 Z" 
+                                    class="fill-amber-300 hover:fill-amber-400 stroke-amber-600 stroke-2 cursor-pointer transition duration-200"
+                                    onclick="selectMapRegion('west')"></path>
+                                <!-- South / Desert -->
+                                <path id="map-path-south" d="M 110,210 C 130,210 160,250 150,300 C 140,360 80,420 50,420 C 50,380 60,320 80,270 C 90,240 100,220 110,210 Z" 
+                                    class="fill-orange-200 hover:fill-orange-300 stroke-orange-500 stroke-2 cursor-pointer transition duration-200"
+                                    onclick="selectMapRegion('south')"></path>
+                                    
+                                <!-- Cute Icons on top of regions -->
+                                <!-- North: Ship/Bizerte -->
+                                <text x="110" y="85" font-size="20" class="pointer-events-none select-none">⛵</text>
+                                <!-- Sahel: Pottery/Colosseum -->
+                                <text x="145" y="155" font-size="20" class="pointer-events-none select-none">🏛️</text>
+                                <!-- West: Green Trees -->
+                                <text x="75" y="160" font-size="20" class="pointer-events-none select-none">🌳</text>
+                                <!-- South: Camel -->
+                                <text x="95" y="320" font-size="24" class="pointer-events-none select-none">🐫</text>
+                            </svg>
+                            
+                            <!-- Tap Tip -->
+                            <div class="absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-3 py-1 rounded-full whitespace-nowrap shadow animate-bounce">
+                                <i class="fas fa-hand-pointer ml-1"></i> اضغط على الخريطة للاستكشاف!
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Region Detailed Information Card -->
+                    <div class="lg:col-span-7">
+                        <div id="region-card" class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-6 border-4 border-amber-300 space-y-4 shadow transition duration-300">
+                            <!-- Dynimcally rendered region details -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gamification / Badges Showcase -->
+            <div class="bg-white p-6 md:p-8 rounded-3xl shadow-md border-4 border-jungleGreen/30 text-center">
+                <h3 class="text-2xl font-black text-slate-900 mb-2">أوسمة مكتشف تونس البطل 🏆</h3>
+                <p class="text-slate-600 font-bold mb-6">احصل على الأوسمة النادرة عند التفوق في المسابقات والبحث عن الكنز!</p>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <!-- Badge 1 -->
+                    <div id="badge-carthage" class="badge-item opacity-40 bg-slate-50 border-2 border-dashed border-slate-300 rounded-2xl p-4 flex flex-col items-center justify-center transition duration-300">
+                        <div class="text-5xl mb-2 filter grayscale grayscale-element">🛡️</div>
+                        <h4 class="font-black text-slate-800">مكتشف قرطاج</h4>
+                        <p class="text-xs text-slate-500 font-bold">أجب على الكويز الأول بنجاح</p>
+                    </div>
+                    <!-- Badge 2 -->
+                    <div id="badge-desert" class="badge-item opacity-40 bg-slate-50 border-2 border-dashed border-slate-300 rounded-2xl p-4 flex flex-col items-center justify-center transition duration-300">
+                        <div class="text-5xl mb-2 filter grayscale grayscale-element">🐫</div>
+                        <h4 class="font-black text-slate-800">صديق الصحراء</h4>
+                        <p class="text-xs text-slate-500 font-bold">أجب على الكويز الثاني بنجاح</p>
+                    </div>
+                    <!-- Badge 3 -->
+                    <div id="badge-explorer" class="badge-item opacity-40 bg-slate-50 border-2 border-dashed border-slate-300 rounded-2xl p-4 flex flex-col items-center justify-center transition duration-300">
+                        <div class="text-5xl mb-2 filter grayscale grayscale-element">🗺️</div>
+                        <h4 class="font-black text-slate-800">رحّالة تونس</h4>
+                        <p class="text-xs text-slate-500 font-bold">اكتشف جميع أقاليم الخريطة</p>
+                    </div>
+                    <!-- Badge 4 -->
+                    <div id="badge-artist" class="badge-item opacity-40 bg-slate-50 border-2 border-dashed border-slate-300 rounded-2xl p-4 flex flex-col items-center justify-center transition duration-300">
+                        <div class="text-5xl mb-2 filter grayscale grayscale-element">🎨</div>
+                        <h4 class="font-black text-slate-800">فنان تونس الرقمي</h4>
+                        <p class="text-xs text-slate-500 font-bold">استخدم لوحة التلوين الرقمي</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 2: DISCOVER TUNISIA (اكتشف بلادك) ================= -->
+        <section id="tab-discover" class="tab-content hidden space-y-8">
+            <div class="text-center max-w-2xl mx-auto space-y-2">
+                <span class="text-5xl">🧭</span>
+                <h2 class="text-3xl font-black text-slate-900">قسم "اكتشف بلادك" السياحي التفاعلي</h2>
+                <p class="text-slate-600 font-bold leading-relaxed">
+                    هذا القسم مصمم خصيصاً بلغة قصصية مبسطة ورسوم جميلة تناسب عقل الطفل وتنمّي وعيه وتعلّقه ببلده تونس.
+                </p>
+            </div>
+
+            <!-- Categories Tabs inside Discover -->
+            <div class="flex justify-center space-x-2 space-x-reverse border-b-4 border-dashed border-sky-200 pb-4">
+                <button onclick="filterDiscover('cultural')" id="btn-discover-cultural" class="discover-tab-btn active bg-rose-100 hover:bg-rose-200 text-rose-700 px-6 py-3 rounded-2xl font-black text-base md:text-lg transition shadow">
+                    🏛️ سياحة ثقافية وتاريخية
+                </button>
+                <button onclick="filterDiscover('ecological')" id="btn-discover-ecological" class="discover-tab-btn bg-emerald-100 hover:bg-emerald-200 text-emerald-700 px-6 py-3 rounded-2xl font-black text-base md:text-lg transition shadow">
+                    🌳 سياحة بيئية واستكشاف
+                </button>
+                <button onclick="filterDiscover('recreational')" id="btn-discover-recreational" class="discover-tab-btn bg-amber-100 hover:bg-amber-200 text-amber-700 px-6 py-3 rounded-2xl font-black text-base md:text-lg transition shadow">
+                    🎡 سياحة ترفيهية وألعاب
+                </button>
+            </div>
+
+            <!-- Discover Grid -->
+            <div id="discover-cards-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Cultural Cards -->
+                <div class="discover-card cultural bg-white rounded-3xl overflow-hidden shadow-md border-4 border-rose-200 transform hover:scale-105 transition duration-300">
+                    <img src="https://placehold.co/600x400/ffe4e6/be123c?text=Carthage" class="w-full h-48 object-cover" alt="قرطاج">
+                    <div class="p-6 space-y-3">
+                        <span class="bg-rose-100 text-rose-700 text-xs font-black px-3 py-1 rounded-full">🏛️ حكاية قرطاج الأسطورية</span>
+                        <h3 class="text-xl font-black text-slate-900">أليسة وسفينة قرطاج العظيمة</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed font-bold">
+                            منذ آلاف السنين، جاءت الملكة الذكية "أليسة" وأسست قرطاج على البحر. بنى القرطاجيون سفناً ضخمة ورائعة لاستكشاف البحار والقيام بتجارة غنية!
+                        </p>
+                    </div>
+                </div>
+
+                <div class="discover-card cultural bg-white rounded-3xl overflow-hidden shadow-md border-4 border-rose-200 transform hover:scale-105 transition duration-300">
+                    <img src="https://placehold.co/600x400/ffe4e6/be123c?text=El+Jem" class="w-full h-48 object-cover" alt="قصر الجم">
+                    <div class="p-6 space-y-3">
+                        <span class="bg-rose-100 text-rose-700 text-xs font-black px-3 py-1 rounded-full">🏛️ أسرار التاريخ الروماني</span>
+                        <h3 class="text-xl font-black text-slate-900">قصر الجم: عملاق المصارعة القديم</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed font-bold">
+                            هل تبدو لك مثل حلبة الكولوسيوم في روما؟ نعم! قصر الجم بتونس هو أحد أكبر المسارح التاريخية في العالم، وكان الأبطال يقومون فيه بعروض مدهشة!
+                        </p>
+                    </div>
+                </div>
+
+                <div class="discover-card cultural bg-white rounded-3xl overflow-hidden shadow-md border-4 border-rose-200 transform hover:scale-105 transition duration-300">
+                    <img src="https://placehold.co/600x400/ffe4e6/be123c?text=Bardo+Museum" class="w-full h-48 object-cover" alt="متحف باردو">
+                    <div class="p-6 space-y-3">
+                        <span class="bg-rose-100 text-rose-700 text-xs font-black px-3 py-1 rounded-full">🏛️ لوحات الفسيفساء</span>
+                        <h3 class="text-xl font-black text-slate-900">متحف باردو: حكايات الحجارة الملونة</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed font-bold">
+                            ستجد هناك لوحات مدهشة مصنوعة من آلاف القطع الحجرية الصغيرة والملونة (الفسيفساء). كل لوحة تروي قصة بطل بحار أو حيوان غريب من الماضي!
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Ecological Cards -->
+                <div class="discover-card ecological hidden bg-white rounded-3xl overflow-hidden shadow-md border-4 border-emerald-200 transform hover:scale-105 transition duration-300">
+                    <img src="https://placehold.co/600x400/ecfdf5/047857?text=Ichkeul" class="w-full h-48 object-cover" alt="حديقة إشكل">
+                    <div class="p-6 space-y-3">
+                        <span class="bg-emerald-100 text-emerald-700 text-xs font-black px-3 py-1 rounded-full">🌳 محميات طبيعية</span>
+                        <h3 class="text-xl font-black text-slate-900">محمية إشكل: واحة الطيور المهاجرة</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed font-bold">
+                            في الشتاء، تأتي آلاف الطيور المهاجرة مثل طائر الفلامنغو الوردي (البشروش) والبط من أوروبا لتقضي عطلتها في بحيرة إشكل الجميلة والدافئة!
+                        </p>
+                    </div>
+                </div>
+
+                <div class="discover-card ecological hidden bg-white rounded-3xl overflow-hidden shadow-md border-4 border-emerald-200 transform hover:scale-105 transition duration-300">
+                    <img src="https://placehold.co/600x400/ecfdf5/047857?text=Sahara+Desert" class="w-full h-48 object-cover" alt="الصحراء التونسية">
+                    <div class="p-6 space-y-3">
+                        <span class="bg-emerald-100 text-emerald-700 text-xs font-black px-3 py-1 rounded-full">🌳 مغامرات الرمال</span>
+                        <h3 class="text-xl font-black text-slate-900">الصحراء التونسية والرمال الذهبية</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed font-bold">
+                            في مدن مثل دوز وتوزر، يمكنك تجربة ركوب الجمل الودود، ومداعبة ثعلب الصحراء الصغير (الفنك)، ورؤية واحات النخيل المليئة بالتمر اللذيذ!
+                        </p>
+                    </div>
+                </div>
+
+                <div class="discover-card ecological hidden bg-white rounded-3xl overflow-hidden shadow-md border-4 border-emerald-200 transform hover:scale-105 transition duration-300">
+                    <img src="https://placehold.co/600x400/ecfdf5/047857?text=Bou-Hedma" class="w-full h-48 object-cover" alt="محمية بوهدمة">
+                    <div class="p-6 space-y-3">
+                        <span class="bg-emerald-100 text-emerald-700 text-xs font-black px-3 py-1 rounded-full">🌳 سفاري الحيوانات النادرة</span>
+                        <h3 class="text-xl font-black text-slate-900">محمية بوهدمة: الغابة التونسية</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed font-bold">
+                            هل تعلم أن تونس بها غابات سفاري حقيقية؟ في بوهدمة تعيش طيور النعام الضخمة وغزلان نادرة تسمى "الريّم" تتجول بحرية بين الأشجار الكثيفة!
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Recreational Cards -->
+                <div class="discover-card recreational hidden bg-white rounded-3xl overflow-hidden shadow-md border-4 border-amber-200 transform hover:scale-105 transition duration-300">
+                    <img src="https://placehold.co/600x400/fef3c7/b45309?text=Friguia+Park" class="w-full h-48 object-cover" alt="حديقة فريغيا">
+                    <div class="p-6 space-y-3">
+                        <span class="bg-amber-100 text-amber-700 text-xs font-black px-3 py-1 rounded-full">🎡 مغامرات برية</span>
+                        <h3 class="text-xl font-black text-slate-900">فريغيا: تواصل مع الحيوانات الصديقة</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed font-bold">
+                            حديقة حيوانات مدهشة ومفتوحة في بوفيشة، حيث يمكنك مشاهدة الأسود، الأفيال الضخمة، وحضور عروض الدلافين الذكية وهي ترقص وتقفز في الماء!
+                        </p>
+                    </div>
+                </div>
+
+                <div class="discover-card recreational hidden bg-white rounded-3xl overflow-hidden shadow-md border-4 border-amber-200 transform hover:scale-105 transition duration-300">
+                    <img src="https://placehold.co/600x400/fef3c7/b45309?text=Carthage+Land" class="w-full h-48 object-cover" alt="قرطاج لاند">
+                    <div class="p-6 space-y-3">
+                        <span class="bg-amber-100 text-amber-700 text-xs font-black px-3 py-1 rounded-full">🎡 مدن ملاهي وألعاب</span>
+                        <h3 class="text-xl font-black text-slate-900">قرطاج لاند: مدينة الألعاب المائية</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed font-bold">
+                            مكان مليء بالحركة والضحك في الحمامات وتونس العاصمة! هناك زلاقات مائية ضخمة وقوارب ممتعة تسبح في أنهار قرطاجية مصغرة مليئة بالمرح!
+                        </p>
+                    </div>
+                </div>
+
+                <div class="discover-card recreational hidden bg-white rounded-3xl overflow-hidden shadow-md border-4 border-amber-200 transform hover:scale-105 transition duration-300">
+                    <img src="https://placehold.co/600x400/fef3c7/b45309?text=Belvedere+Park" class="w-full h-48 object-cover" alt="البلفيدير">
+                    <div class="p-6 space-y-3">
+                        <span class="bg-amber-100 text-amber-700 text-xs font-black px-3 py-1 rounded-full">🎡 حدائق عائلية</span>
+                        <h3 class="text-xl font-black text-slate-900">منتزه البلفيدير في قلب العاصمة</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed font-bold">
+                            غابة وارفة الظلال في تونس العاصمة تحتوي على بحيرة صغيرة للمراكب وحديقة حيوانات عريقة، ومساحات شاسعة للعب بالجري والكرات والتمتع بالطبيعة!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 3: PLAY & CHALLENGE (العب وتحدّى) ================= -->
+        <section id="tab-play" class="tab-content hidden space-y-8">
+            <div class="text-center max-w-2xl mx-auto space-y-2">
+                <span class="text-5xl">🎮</span>
+                <h2 class="text-3xl font-black text-slate-900">ألعاب ومسابقات المكتشف الذكي</h2>
+                <p class="text-slate-600 font-bold">تحدّ نفسك، اجمع النجوم الذهبية وافتح أوسمتك الخاصة بمشروع التخرج الفريد!</p>
+            </div>
+
+            <!-- Internal Play Tabs -->
+            <div class="flex flex-wrap justify-center gap-2 border-b-2 border-dashed border-slate-200 pb-4">
+                <button onclick="switchPlayTab('quiz-section')" id="btn-play-quiz" class="play-subtab-btn active bg-sky-100 text-sky-700 px-5 py-2.5 rounded-xl font-black text-base transition shadow">
+                    ⭐ كويز "مكتشف الآثار" و"السفاري"
+                </button>
+                <button onclick="switchPlayTab('hunt-section')" id="btn-play-hunt" class="play-subtab-btn bg-amber-100 text-amber-700 px-5 py-2.5 rounded-xl font-black text-base transition shadow">
+                    🔑 لعبة البحث عن الكنز
+                </button>
+                <button onclick="switchPlayTab('coloring-section')" id="btn-play-coloring" class="play-subtab-btn bg-rose-100 text-rose-700 px-5 py-2.5 rounded-xl font-black text-base transition shadow">
+                    🎨 كراسة التلوين الرقمية
+                </button>
+            </div>
+
+            <!-- 3.1: QUIZ SUBSECTION -->
+            <div id="quiz-section" class="play-content-block space-y-8">
+                <!-- Select Quiz Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Quiz 1 Card -->
+                    <div class="bg-white rounded-3xl p-6 border-4 border-rose-300 shadow relative">
+                        <div class="text-4xl mb-3">🏛️</div>
+                        <h3 class="text-xl font-black text-slate-900 mb-2">الكويز الأول: مكتشف الآثار الصغير</h3>
+                        <p class="text-sm text-slate-500 font-bold mb-4">كويز رائع يختبر معلومات طفلك التاريخية والثقافية بأسلوب ممتع وشيق!</p>
+                        <button onclick="startQuiz('quiz1')" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-black py-3 rounded-2xl border-b-4 border-rose-700 shadow transition">
+                            ابدأ كويز الآثار 🚀
+                        </button>
+                    </div>
+
+                    <!-- Quiz 2 Card -->
+                    <div class="bg-white rounded-3xl p-6 border-4 border-emerald-300 shadow relative">
+                        <div class="text-4xl mb-3">🐆</div>
+                        <h3 class="text-xl font-black text-slate-900 mb-2">الكويز الثاني: سفاري تونس الخضراء</h3>
+                        <p class="text-sm text-slate-500 font-bold mb-4">كويز تفاعلي عن سياحة البيئة، المحميات الطبيعية والحيوانات الرائعة في تونس!</p>
+                        <button onclick="startQuiz('quiz2')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 rounded-2xl border-b-4 border-emerald-700 shadow transition">
+                            ابدأ كويز السفاري 🚀
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Interactive Quiz Play Box (Hidden initially) -->
+                <div id="quiz-play-box" class="hidden bg-white rounded-3xl p-6 md:p-8 border-4 border-skyBlue shadow-lg max-w-2xl mx-auto space-y-6 relative">
+                    <div class="absolute -top-4 -left-4 text-4xl transform -rotate-12 animate-wiggle">🧭</div>
+                    
+                    <div class="flex justify-between items-center border-b pb-3">
+                        <h4 id="quiz-title" class="font-black text-lg text-slate-800">اسم الكويز</h4>
+                        <span id="quiz-progress" class="bg-sky-100 text-sky-700 text-xs font-black px-3 py-1 rounded-full">السؤال 1 من 2</span>
+                    </div>
+
+                    <div class="space-y-4">
+                        <p id="quiz-question-text" class="text-xl font-black text-slate-900 text-right leading-relaxed">نص السؤال التفاعلي يظهر هنا مع صور توضيحية؟</p>
+                        
+                        <!-- Answers Choices Stack -->
+                        <div id="quiz-choices" class="space-y-3">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+
+                    <div id="quiz-feedback" class="hidden text-center p-3 rounded-2xl font-black transition">
+                        <!-- Correct/Wrong message with beautiful styles -->
+                    </div>
+
+                    <div class="flex justify-end pt-2">
+                        <button id="quiz-next-btn" onclick="nextQuestion()" class="hidden bg-sunnyYellow hover:bg-amber-400 text-slate-900 font-black px-6 py-2.5 rounded-xl border-b-4 border-amber-600 transition">
+                            السؤال التالي <i class="fas fa-arrow-left mr-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3.2: TREASURE HUNT SUBSECTION -->
+            <div id="hunt-section" class="play-content-block hidden space-y-6 max-w-2xl mx-auto">
+                <div class="bg-gradient-to-br from-amber-50 to-yellow-100 p-6 md:p-8 rounded-3xl border-4 border-amber-400 space-y-6 relative shadow">
+                    <div class="absolute -top-6 left-6 text-5xl transform rotate-12 animate-bounce-slow">🗝️</div>
+                    <h3 class="text-2xl font-black text-slate-900 text-center flex items-center justify-center gap-2">
+                        <span>🕵️‍♀️</span> لعبة البحث عن الكنز المفقود
+                    </h3>
+                    <p class="text-slate-600 font-bold leading-relaxed text-center">
+                        هناك ٣ أدلة غامضة ومثيرة مخبأة حول تونس! خمن المعلم الصحيح المذكور في كل لغز لتربح وسام مكتشف تونس وتجمع ٣٠ نقطة إضافية!
+                    </p>
+
+                    <!-- Clue 1 -->
+                    <div class="bg-white p-4 rounded-2xl border-2 border-slate-200 space-y-3" id="clue-container-1">
+                        <div class="flex justify-between items-center">
+                            <span class="bg-amber-100 text-amber-700 text-xs font-black px-3 py-1 rounded-full">اللغز الأول 🧩</span>
+                            <span id="clue-status-1" class="text-xs font-bold text-rose-500"><i class="fas fa-lock ml-1"></i> مقفل</span>
+                        </div>
+                        <p class="font-bold text-slate-700 text-right">"أنا قصر روماني عملاق وشهير، لوني من طين جميل، وكان المصارعون يلعبون في داخلي منذ زمن طويل.. فمن أكون؟"</p>
+                        <div class="flex gap-2">
+                            <input type="text" id="clue-input-1" class="flex-1 px-4 py-2 border-2 rounded-xl text-sm font-bold outline-none focus:border-amber-400" placeholder="اكتب اسم المعلم (مثال: قصر الجم)">
+                            <button onclick="verifyClue(1, 'قصر الجم')" class="bg-amber-500 hover:bg-amber-600 text-white font-black px-4 py-2 rounded-xl text-sm transition">تحقق</button>
+                        </div>
+                    </div>
+
+                    <!-- Clue 2 -->
+                    <div class="bg-white p-4 rounded-2xl border-2 border-slate-200 space-y-3" id="clue-container-2">
+                        <div class="flex justify-between items-center">
+                            <span class="bg-amber-100 text-amber-700 text-xs font-black px-3 py-1 rounded-full">اللغز الثاني 🧩</span>
+                            <span id="clue-status-2" class="text-xs font-bold text-rose-500"><i class="fas fa-lock ml-1"></i> مقفل</span>
+                        </div>
+                        <p class="font-bold text-slate-700 text-right">"أنا مدينة ساحلية جميلة جداً ودافئة، مشهورة عالمياً بصناعة الأواني الفخارية الملونة والجميلة.. فمن أكون؟"</p>
+                        <div class="flex gap-2">
+                            <input type="text" id="clue-input-2" class="flex-1 px-4 py-2 border-2 rounded-xl text-sm font-bold outline-none focus:border-amber-400" placeholder="اكتب اسم المدينة">
+                            <button onclick="verifyClue(2, 'نابل')" class="bg-amber-500 hover:bg-amber-600 text-white font-black px-4 py-2 rounded-xl text-sm transition">تحقق</button>
+                        </div>
+                    </div>
+
+                    <!-- Clue 3 -->
+                    <div class="bg-white p-4 rounded-2xl border-2 border-slate-200 space-y-3" id="clue-container-3">
+                        <div class="flex justify-between items-center">
+                            <span class="bg-amber-100 text-amber-700 text-xs font-black px-3 py-1 rounded-full">اللغز الثالث 🧩</span>
+                            <span id="clue-status-3" class="text-xs font-bold text-rose-500"><i class="fas fa-lock ml-1"></i> مقفل</span>
+                        </div>
+                        <p class="font-bold text-slate-700 text-right">"أنا طائر جميل أهاجر في الشتاء بأعداد كبيرة إلى بحيرة إشكل، أتميز بلوني الوردي الساحر وقدمي الطويلتين.. فمن أكون؟"</p>
+                        <div class="flex gap-2">
+                            <input type="text" id="clue-input-3" class="flex-1 px-4 py-2 border-2 rounded-xl text-sm font-bold outline-none focus:border-amber-400" placeholder="مثال: البشروش أو الفلامنغو">
+                            <button onclick="verifyClue(3, 'البشروش')" class="bg-amber-500 hover:bg-amber-600 text-white font-black px-4 py-2 rounded-xl text-sm transition">تحقق</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3.3: DIGITAL COLORING BOOK SUBSECTION -->
+            <div id="coloring-section" class="play-content-block hidden space-y-6">
+                <div class="bg-white p-6 md:p-8 rounded-3xl border-4 border-rose-300 shadow space-y-6">
+                    <div class="text-center max-w-xl mx-auto space-y-2">
+                        <span class="text-4xl">🎨</span>
+                        <h3 class="text-2xl font-black text-slate-900">كراسة التلوين والرسم الرقمي</h3>
+                        <p class="text-slate-600 font-bold text-sm">اختر قالباً كرتونياً من كنوز تونس ولونه بأجمل الألوان لتثبت أنك فنان ذكي ومبدع!</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <!-- Color Palette & Tools -->
+                        <div class="lg:col-span-3 bg-rose-50 p-4 rounded-2xl border-2 border-rose-200 flex flex-col justify-between space-y-4">
+                            <div>
+                                <h4 class="font-black text-slate-800 mb-3 text-right">🎨 اختر لونا جميلاً:</h4>
+                                <div class="grid grid-cols-4 gap-2">
+                                    <button onclick="setColor('#E10600')" class="w-10 h-10 rounded-full border-2 border-white shadow bg-[#E10600]" title="أحمر قرطاج"></button>
+                                    <button onclick="setColor('#38BDF8')" class="w-10 h-10 rounded-full border-2 border-white shadow bg-[#38BDF8]" title="أزرق سيدي بوسعيد"></button>
+                                    <button onclick="setColor('#FBBF24')" class="w-10 h-10 rounded-full border-2 border-white shadow bg-[#FBBF24]" title="رمل الصحراء"></button>
+                                    <button onclick="setColor('#34D399')" class="w-10 h-10 rounded-full border-2 border-white shadow bg-[#34D399]" title="أخضر تونس الخضراء"></button>
+                                    <button onclick="setColor('#F43F5E')" class="w-10 h-10 rounded-full border-2 border-white shadow bg-[#F43F5E]" title="وردي البشروش"></button>
+                                    <button onclick="setColor('#8B5CF6')" class="w-10 h-10 rounded-full border-2 border-white shadow bg-[#8B5CF6]" title="بنفسجي الفخار"></button>
+                                    <button onclick="setColor('#475569')" class="w-10 h-10 rounded-full border-2 border-white shadow bg-[#475569]" title="رمادي الآثار"></button>
+                                    <button onclick="setColor('#FFFFFF')" class="w-10 h-10 rounded-full border-2 border-slate-300 shadow bg-[#FFFFFF]" title="ممحاة"></button>
+                                </div>
+                            </div>
+
+                            <div class="space-y-3">
+                                <h4 class="font-black text-slate-800 text-right">🖌️ حجم الفرشاة:</h4>
+                                <input type="range" id="brush-size" min="2" max="25" value="8" class="w-full accent-rose-500">
+                                
+                                <div class="flex gap-2">
+                                    <button onclick="clearCanvas()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-3 rounded-xl text-sm transition">
+                                        <i class="fas fa-eraser ml-1"></i> مسح الكل
+                                    </button>
+                                    <button onclick="triggerDownload()" class="flex-1 bg-rose-500 hover:bg-rose-600 text-white font-bold py-2 px-3 rounded-xl text-sm transition">
+                                        <i class="fas fa-download ml-1"></i> حفظ رسمتي
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Canvas Workspace -->
+                        <div class="lg:col-span-6 flex justify-center">
+                            <div class="border-4 border-dashed border-slate-300 bg-white rounded-2xl overflow-hidden p-2 shadow-inner">
+                                <canvas id="drawing-canvas" width="400" height="400" class="cursor-crosshair bg-white max-w-full touch-none"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Image Outlines Selectors -->
+                        <div class="lg:col-span-3 bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-4 text-center">
+                            <h4 class="font-black text-slate-800 text-right">✏️ اختر رسماً لتلوينه:</h4>
+                            <div class="space-y-3">
+                                <button onclick="loadTemplate('pot')" class="w-full p-2 bg-white rounded-xl border hover:border-rose-400 font-bold text-xs flex items-center justify-between transition">
+                                    <span>جرة فخار نابل</span> <span class="text-xl">🏺</span>
+                                </button>
+                                <button onclick="loadTemplate('ship')" class="w-full p-2 bg-white rounded-xl border hover:border-rose-400 font-bold text-xs flex items-center justify-between transition">
+                                    <span>سفينة قرطاج العريقة</span> <span class="text-xl">⛵</span>
+                                </button>
+                                <button onclick="loadTemplate('camel')" class="w-full p-2 bg-white rounded-xl border hover:border-rose-400 font-bold text-xs flex items-center justify-between transition">
+                                    <span>جمل الصحراء المبتسم</span> <span class="text-xl">🐫</span>
+                                </button>
+                            </div>
+                            <p class="text-[10px] text-slate-400 font-bold">يمكنك الرسم بحرية فوق الصورة المختارة باستخدام الماوس أو إصبعك على الشاشة!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 4: PARENTS' GUIDE (دليل الأولياء) ================= -->
+        <section id="tab-parents" class="tab-content hidden space-y-8">
+            <div class="text-center max-w-2xl mx-auto space-y-2">
+                <span class="text-5xl">👪</span>
+                <h2 class="text-3xl font-black text-slate-900">قسم "دليل الأولياء" (Espace Parents)</h2>
+                <p class="text-slate-600 font-bold leading-relaxed">
+                    مخصص لمساعدة الآباء والأمهات على تنظيم رحلات آمنة، ممتعة، ومفيدة لأطفالهم في ربوع تونس الخضراء.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                
+                <!-- Practical Tips & Guides (Left Column) -->
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="bg-white p-6 rounded-3xl shadow border-2 border-teal-200 space-y-4">
+                        <h3 class="text-xl font-black text-teal-800 flex items-center gap-2">
+                            <span>📌</span> نصائح ذهبية قبل السفر مع طفلك في تونس
+                        </h3>
+                        
+                        <div class="space-y-4 text-sm text-slate-700 leading-relaxed font-bold">
+                            <!-- Tip 1 -->
+                            <div class="flex items-start gap-3">
+                                <div class="bg-teal-100 text-teal-700 p-2.5 rounded-xl font-black shrink-0">١</div>
+                                <div>
+                                    <h4 class="font-black text-slate-900 text-base mb-1">الابتعاد عن الأرقام التواريخ الجافة</h4>
+                                    <p class="text-slate-600 text-xs">عند زيارة قصر الجم أو قرطاج، ركز على سرد قصص خيالية كرتونية عن الفرسان والملوك بدلاً من تواريخ معقدة تسبب ملل طفلك.</p>
+                                </div>
+                            </div>
+                            <!-- Tip 2 -->
+                            <div class="flex items-start gap-3">
+                                <div class="bg-teal-100 text-teal-700 p-2.5 rounded-xl font-black shrink-0">٢</div>
+                                <div>
+                                    <h4 class="font-black text-slate-900 text-base mb-1">تجهيز حقيبة المغامرات للطفل</h4>
+                                    <p class="text-slate-600 text-xs">دع طفلك يحمل منظاره الخاص، بوصلة بلاستيكية، وقبعة مغامر صغيرة ليتحول السفر إلى مهمة استكشافية حقيقية.</p>
+                                </div>
+                            </div>
+                            <!-- Tip 3 -->
+                            <div class="flex items-start gap-3">
+                                <div class="bg-teal-100 text-teal-700 p-2.5 rounded-xl font-black shrink-0">٣</div>
+                                <div>
+                                    <h4 class="font-black text-slate-900 text-base mb-1">البحث الفعلي عن الأماكن الصديقة للطفل</h4>
+                                    <p class="text-slate-600 text-xs">تأكد دائماً من أن المكان يوفر مرافق ضرورية مثل: كراسي أطفال مخصصة، وجبات صحية للأطفال، ومساحة تلوين أو ألعاب آمنة.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recommended family-friendly places checklist -->
+                    <div class="bg-white p-6 rounded-3xl shadow border-2 border-teal-200 space-y-4">
+                        <h3 class="text-xl font-black text-teal-800 flex items-center gap-2">
+                            <span>✅</span> قائمة الأماكن الصديقة للأطفال في تونس
+                        </h3>
+                        <p class="text-xs text-slate-500 font-bold mb-3">اضغط على الأماكن التي زرتها مع طفلك مسبقاً لمراقبة تقدم عائلتك!</p>
+                        
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition">
+                                <input type="checkbox" class="w-5 h-5 accent-teal-600 rounded">
+                                <span class="font-bold text-slate-700 text-sm">حديقة فريغيا بوفيشة (حديقة حيوانات مفتوحة وعرض الدلافين)</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition">
+                                <input type="checkbox" class="w-5 h-5 accent-teal-600 rounded">
+                                <span class="font-bold text-slate-700 text-sm">ملاهي وألعاب قرطاج لاند بالحمامات تونس</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition">
+                                <input type="checkbox" class="w-5 h-5 accent-teal-600 rounded">
+                                <span class="font-bold text-slate-700 text-sm">متحف باردو في العاصمة (استكشاف لوحات الفسيفساء)</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition">
+                                <input type="checkbox" class="w-5 h-5 accent-teal-600 rounded">
+                                <span class="font-bold text-slate-700 text-sm">مدينة دوز وتوزر (رحلة الصحراء، الجمال والواحات)</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Parents Feedback & Interactive Map recommendation (Right Column) -->
+                <div class="lg:col-span-5 space-y-6">
+                    <div class="bg-gradient-to-br from-teal-50 to-emerald-50 p-6 rounded-3xl border-4 border-teal-400 space-y-4">
+                        <h3 class="text-xl font-black text-teal-800 flex items-center gap-2">
+                            <span>📬</span> شارك برأيك / اقتراح مكان عائلي
+                        </h3>
+                        <p class="text-xs text-slate-600 font-semibold leading-relaxed">
+                            هل تعرف مكاناً مميزاً وصديقاً للأطفال في تونس لم نذكره؟ أضفه هنا لتقاسم الفكرة مع بقية الأولياء!
+                        </p>
+                        
+                        <form id="parents-recommendation-form" onsubmit="submitRecommendation(event)" class="space-y-3">
+                            <div>
+                                <label class="block text-right text-xs font-black text-slate-700 mb-1">اسم الولي:</label>
+                                <input type="text" required id="rec-parent-name" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-bold focus:border-teal-400 outline-none" placeholder="الاسم واللقب">
+                            </div>
+                            <div>
+                                <label class="block text-right text-xs font-black text-slate-700 mb-1">اسم الولاية والمكان المقترح:</label>
+                                <input type="text" required id="rec-place-name" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-bold focus:border-teal-400 outline-none" placeholder="مثال: قابس - حديقة الألعاب المائية">
+                            </div>
+                            <div>
+                                <label class="block text-right text-xs font-black text-slate-700 mb-1">وصف المرفق للأطفال:</label>
+                                <textarea required id="rec-desc" rows="3" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-bold focus:border-teal-400 outline-none" placeholder="مثال: تتوفر ألعاب رملية آمنة ومرافق تغيير للأطفال..."></textarea>
+                            </div>
+                            <button type="submit" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-black py-2.5 rounded-xl border-b-4 border-teal-800 text-sm transition">
+                                إرسال الاقتراح التفاعلي 👍
+                            </button>
+                        </form>
+
+                        <!-- Added Recommendations list container -->
+                        <div class="space-y-2 mt-4" id="added-recommendations-list">
+                            <h4 class="font-black text-teal-900 text-xs border-b pb-1">💡 اقتراحات الأولياء النشطة:</h4>
+                            <div class="p-2 bg-white rounded-xl border text-xs leading-relaxed font-semibold">
+                                <span class="font-bold text-teal-700">الأم هبة:</span> منتزه "بالم كارت" في توزر رائع وجيد للأطفال بركوب العربات المجرورة.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Playful Footer -->
+    <footer class="bg-slate-900 text-white pt-12 pb-6 mt-16 relative overflow-hidden border-t-8 border-sunnyYellow">
+        <div class="absolute top-0 inset-x-0 h-4 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/10 to-transparent"></div>
+        
+        <div class="container mx-auto px-4 max-w-6xl grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-right">
+            <!-- Footer col 1 -->
+            <div class="space-y-3">
+                <h4 class="text-xl font-black text-sunnyYellow font-tajawal">مكتشف تونس الصغير 🇹🇳</h4>
+                <p class="text-xs text-slate-400 font-bold leading-relaxed">
+                    منصة تعليمية ترفيهية تفاعلية موجهة للأطفال لتشجيع السياحة الداخلية في تونس، مصممة كأطروحة مميزة وعملية لمذكرة تخرج سياحية رائدة.
+                </p>
+                <div class="flex justify-center md:justify-start space-x-3 space-x-reverse pt-2">
+                    <a href="#" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-skyBlue flex items-center justify-center transition"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-skyBlue flex items-center justify-center transition"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-skyBlue flex items-center justify-center transition"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+
+            <!-- Footer col 2 -->
+            <div class="space-y-2">
+                <h4 class="text-lg font-black text-sunnyYellow font-tajawal">أقسام ميموار التخرج</h4>
+                <ul class="text-xs text-slate-400 font-bold space-y-2">
+                    <li><a href="#" onclick="switchTab('home')" class="hover:text-skyBlue transition">🏠 الصفحة الرئيسية والخريطة التفاعلية</a></li>
+                    <li><a href="#" onclick="switchTab('discover')" class="hover:text-skyBlue transition">🧭 الاستكشاف السياحي التفاعلي للطفل</a></li>
+                    <li><a href="#" onclick="switchTab('play')" class="hover:text-skyBlue transition">🎮 كويز الألعاب والبحث عن الكنز الرقمي</a></li>
+                    <li><a href="#" onclick="switchTab('parents')" class="hover:text-skyBlue transition">👪 دليل الأولياء والمقترحات العائلية</a></li>
+                </ul>
+            </div>
+
+            <!-- Footer col 3 -->
+            <div class="space-y-3">
+                <h4 class="text-lg font-black text-sunnyYellow font-tajawal">معلومات التخرج 🎓</h4>
+                <div class="text-xs text-slate-400 font-bold space-y-1">
+                    <p>المشروع: "تطوير سياحة الأطفال بتونس عبر منصات تفاعلية"</p>
+                    <p>مذكرة التخرج لنيل شهادة البكالوريوس/الماستر</p>
+                    <p>تونس الخضراء، دفعة ٢٠٢٦ 🇹🇳</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mx-auto px-4 max-w-6xl mt-8 pt-6 border-t border-slate-800 text-center text-xs text-slate-500 font-bold">
+            كل الحقوق محفوظة &copy; ٢٠٢٦. تم التصميم والبرمجة بالحب والدقة والتميز.
+        </div>
+    </footer>
+
+    <!-- Main Script Execution -->
+    <script>
+        // Content for Tunisia Map Regions
+        const regionDetails = {
+            north: {
+                title: "🌊 الشمال التونسي الساحر والبحار الواسعة",
+                text: "أهلاً بك في الشمال الجميل! هنا ستجد سواحل بنزرت الرائعة، وسفن قرطاج العريقة، والمناطق الخضراء الواسعة مثل غابات عين دراهم المليئة بأشجار البلوط الشاهقة، والحيوانات البرية اللطيفة كالغزلان البرية.",
+                tips: "💡 لا تفوت زيارة منارة بنزرت القديمة وقضاء نزهة مائية عائلية هادئة!",
+                color: "border-emerald-400 bg-emerald-50 text-emerald-950",
+                badge: "explorer"
+            },
+            sahel: {
+                title: "🏛️ الساحل الشرقي ونابل الملونة بالفخار",
+                text: "مرحباً بك في الساحل الشرقي الجميل وتحديداً نابل! تشتهر هذه المنطقة بصناعة أواني الفخار اليدوية الرائعة الملونة بالورود والأشكال التونسية العريقة، كما تجد مدينة سوسة التاريخية وجوهرة قصر الجم الروماني العملاق بالقرب من المهدية.",
+                tips: "💡 يمكنك شراء جرة طينية صغيرة وتلوينها كهدية مبهجة لعائلتك!",
+                color: "border-sunnyYellow bg-amber-50 text-slate-900",
+                badge: "explorer"
+            },
+            west: {
+                title: "🌳 الوسط الغربي وجبال السعانبي الشامخة",
+                text: "أهلاً بك في الوسط الغربي ذو الجبال الشاهقة! هنا ستجد جبل الشعانبي وهو أعلى قمة جبلية في تونس الخضراء، والعديد من المحميات الرائعة والغابات الكثيفة المليئة بالنباتات البرية والأزهار الجبلية ذات الرائحة الزكية والمشاهد الساحرة.",
+                tips: "💡 فرصة مثالية للأولياء لتلقين الأطفال أساليب حماية البيئة والنظافة بالمحميات الجبلية!",
+                color: "border-skyBlue bg-sky-50 text-sky-950",
+                badge: "explorer"
+            },
+            south: {
+                title: "🐫 الجنوب التونسي وبوابة الصحراء الكبرى",
+                text: "مرحباً بك في أرض المغامرات والرمال الذهبية! في مدن توزر ودوز الجميلة يمكنك رؤية الصحراء الكبرى المذهلة، ركوب الجمال الوديعة، زيارة واحات النخيل وتذوق تمر دقلة النور الشهي واللذيذ.",
+                tips: "💡 ينصح بركوب دراجات الصحراء الرملية الآمنة مع الوالدين لمشاهدة الغروب الرائع!",
+                color: "border-orange-400 bg-orange-50 text-orange-950",
+                badge: "explorer"
+            }
+        };
+
+        // Quiz Questions Data Base
+        const QuizData = {
+            quiz1: {
+                title: "مكتشف الآثار الصغير 🏛️",
+                questions: [
+                    {
+                        q: "ما هو المعلم الأثري التونسي القديم الذي يشبه حلبة 'الكولوسيوم' في روما وكان يقام به صراعات تاريخية؟",
+                        choices: ["متحف باردو العريق", "قصر الجم الأثري", "جامع الزيتونة المعمور"],
+                        correct: 1,
+                        badge: "carthage"
+                    },
+                    {
+                        q: "أنا مدينة تونسية مشهورة بصناعة الفخار الملون والجميل واللوحات الطينية المميزة، فمن أنا؟",
+                        choices: ["نابل الجميلة", "سوسة الساحلية", "توزر الصحراوية"],
+                        correct: 0,
+                        badge: "carthage"
+                    }
+                ]
+            },
+            quiz2: {
+                title: "سفاري تونس الخضراء 🐆",
+                questions: [
+                    {
+                        q: "إذا زرت حديقة 'إشكل' الوطنية الرائعة في الشتاء، فما هو الطائر المهاجر ذو اللون الوردي الجميل الذي ستراه بكثرة هناك؟",
+                        choices: ["طائر النعامة الضخم", "طائر الفلامنغو الوردي (البشروش)", "الببغاء الأخضر المتكلم"],
+                        correct: 1,
+                        badge: "desert"
+                    },
+                    {
+                        q: "في أي مدينة تونسية يمكنك خوض تجربة ركوب الجمال العريقة والاستمتاع بمشاهدة الرمال الذهبية للصحراء الواسعة؟",
+                        choices: ["بنزرت البحرية", "دوز أو توزر", "تونس العاصمة"],
+                        correct: 1,
+                        badge: "desert"
+                    }
+                ]
+            }
+        };
+
+        let currentActiveQuizKey = '';
+
+        // Switch main menu tabs
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(el => {
+                el.classList.remove('bg-sunnyYellow', 'text-slate-900', 'border-2', 'border-amber-400');
+            });
+            document.getElementById(`nav-${tabId}`).classList.add('bg-sunnyYellow', 'text-slate-900', 'border-2', 'border-amber-400');
+            
+            AppState.currentTab = tabId;
+            SoundFX.playClick();
+        }
+
+        // Switch play sub-sections
+        function switchPlayTab(sectionId) {
+            document.querySelectorAll('.play-content-block').forEach(el => el.classList.add('hidden'));
+            document.getElementById(sectionId).classList.remove('hidden');
+
+            document.querySelectorAll('.play-subtab-btn').forEach(el => {
+                el.classList.remove('active', 'border-2', 'border-current');
+            });
+            event.target.classList.add('active', 'border-2', 'border-current');
+            SoundFX.playClick();
+            
+            if (sectionId === 'coloring-section') {
+                setTimeout(initCanvas, 100);
+            }
+        }
+
+        // Filter discover categories
+        function filterDiscover(category) {
+            document.querySelectorAll('.discover-card').forEach(card => {
+                if (card.classList.contains(category)) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+
+            document.querySelectorAll('.discover-tab-btn').forEach(btn => {
+                btn.classList.remove('ring-4', 'ring-skyBlue');
+            });
+            document.getElementById(`btn-discover-${category}`).classList.add('ring-4', 'ring-skyBlue');
+            SoundFX.playClick();
+        }
+
+        // Select Interactive Map Region
+        function selectMapRegion(regionKey) {
+            AppState.selectedRegion = regionKey;
+            SoundFX.playClick();
+            
+            // Highlight active paths visually
+            const paths = ['north', 'sahel', 'west', 'south'];
+            paths.forEach(p => {
+                const element = document.getElementById(`map-path-${p}`);
+                if (element) {
+                    if (p === regionKey) {
+                        element.classList.add('stroke-slate-900', 'stroke-[4px]');
+                    } else {
+                        element.classList.remove('stroke-slate-900', 'stroke-[4px]');
+                    }
+                }
+            });
+
+            // Update UI card details
+            const data = regionDetails[regionKey];
+            const card = document.getElementById('region-card');
+            
+            card.className = `${data.color} rounded-2xl p-6 border-4 shadow transition duration-300`;
+            card.innerHTML = `
+                <div class="flex justify-between items-start gap-4">
+                    <h4 class="text-xl font-black font-tajawal">${data.title}</h4>
+                    <span class="text-3xl animate-bounce-slow">✨</span>
+                </div>
+                <p class="text-slate-700 text-sm md:text-base leading-relaxed font-bold">${data.text}</p>
+                <div class="p-3 bg-white/60 rounded-xl border-l-4 border-amber-500 text-xs md:text-sm font-bold mt-2">
+                    ${data.tips}
+                </div>
+                <div class="flex justify-between items-center pt-2">
+                    <span class="text-xs text-amber-800 font-bold bg-amber-100 px-3 py-1 rounded-full"><i class="fas fa-plus ml-1"></i> حصلت على ٥ نقاط استكشاف!</span>
+                    <button onclick="switchTab('discover'); filterDiscover('${regionKey === 'south' ? 'ecological' : regionKey === 'north' ? 'cultural' : 'recreational'}');" class="bg-white/80 border border-slate-300 hover:bg-white text-xs font-black px-4 py-1.5 rounded-lg transition shadow">
+                        عرض التفاصيل بالصور <i class="fas fa-arrow-left mr-1"></i>
+                    </button>
+                </div>
+            `;
+
+            // Give points for clicking region if not repeated
+            addPoints(5);
+            awardBadge('explorer');
+        }
+
+        // Quiz System Functions
+        function startQuiz(quizKey) {
+            SoundFX.playClick();
+            currentActiveQuizKey = quizKey;
+            AppState.quizState[quizKey].current = 0;
+            AppState.quizState[quizKey].score = 0;
+            AppState.quizState[quizKey].completed = false;
+            
+            const qBox = document.getElementById('quiz-play-box');
+            qBox.classList.remove('hidden');
+            qBox.scrollIntoView({ behavior: 'smooth' });
+
+            renderQuizQuestion();
+        }
+
+        function renderQuizQuestion() {
+            const quiz = QuizData[currentActiveQuizKey];
+            const state = AppState.quizState[currentActiveQuizKey];
+            const qData = quiz.questions[state.current];
+
+            document.getElementById('quiz-title').innerText = quiz.title;
+            document.getElementById('quiz-progress').innerText = `السؤال ${state.current + 1} من ${quiz.questions.length}`;
+            document.getElementById('quiz-question-text').innerText = qData.q;
+            
+            // Render Choices buttons
+            const choicesContainer = document.getElementById('quiz-choices');
+            choicesContainer.innerHTML = '';
+            
+            qData.choices.forEach((choice, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-right p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl font-bold text-slate-700 hover:bg-sky-50 hover:border-sky-400 transition-all flex justify-between items-center";
+                btn.innerHTML = `<span>${choice}</span> <span class="text-slate-400 opacity-0 group-hover:opacity-100 transition">👉</span>`;
+                btn.onclick = () => checkQuizAnswer(idx);
+                choicesContainer.appendChild(btn);
+            });
+
+            document.getElementById('quiz-feedback').classList.add('hidden');
+            document.getElementById('quiz-next-btn').classList.add('hidden');
+        }
+
+        function checkQuizAnswer(selectedIndex) {
+            const quiz = QuizData[currentActiveQuizKey];
+            const state = AppState.quizState[currentActiveQuizKey];
+            const qData = quiz.questions[state.current];
+            
+            // Disable other options clicking
+            const buttons = document.querySelectorAll('#quiz-choices button');
+            buttons.forEach(btn => btn.disabled = true);
+
+            const feedback = document.getElementById('quiz-feedback');
+            feedback.classList.remove('hidden');
+
+            if (selectedIndex === qData.correct) {
+                SoundFX.playSuccess();
+                state.score++;
+                addPoints(15);
+                feedback.className = "text-center p-3 rounded-2xl font-black bg-emerald-100 text-emerald-700 border border-emerald-300";
+                feedback.innerHTML = "🎉 إجابة صحيحة ومثيرة للاهتمام! أنت رائع وحصلت على ١٥ نقطة!";
+                createConfetti();
+            } else {
+                SoundFX.playWrong();
+                feedback.className = "text-center p-3 rounded-2xl font-black bg-rose-100 text-rose-700 border border-rose-300";
+                feedback.innerHTML = `😢 إجابة غير صحيحة، حاول التركيز! الإجابة الصحيحة هي: "${qData.choices[qData.correct]}"`;
+            }
+
+            document.getElementById('quiz-next-btn').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            SoundFX.playClick();
+            const state = AppState.quizState[currentActiveQuizKey];
+            const quiz = QuizData[currentActiveQuizKey];
+
+            if (state.current < quiz.questions.length - 1) {
+                state.current++;
+                renderQuizQuestion();
+            } else {
+                // Quiz completed!
+                state.completed = true;
+                const feedback = document.getElementById('quiz-feedback');
+                feedback.className = "text-center p-6 rounded-3xl font-black bg-indigo-100 text-indigo-700 border border-indigo-300 space-y-3";
+                feedback.innerHTML = `
+                    <p class="text-2xl">🏆 تهانينا! لقد أنهيت المسابقة بالكامل!</p>
+                    <p class="text-base font-bold">نتيجتك هي: ${state.score} من ${quiz.questions.length}</p>
+                    <p class="text-xs text-indigo-500">تم إضافة نقاط الإنجاز إلى رصيدك البصري بمذكرة التخرج!</p>
+                `;
+                document.getElementById('quiz-next-btn').classList.add('hidden');
+                document.getElementById('quiz-choices').innerHTML = '';
+                
+                // Award Badge
+                if (state.score === quiz.questions.length) {
+                    awardBadge(currentActiveQuizKey === 'quiz1' ? 'carthage' : 'desert');
+                }
+            }
+        }
+
+        // Clue Verification Game Logic
+        function verifyClue(clueId, answerKeyword) {
+            const inputVal = document.getElementById(`clue-input-${clueId}`).value.trim();
+            
+            if (inputVal.includes(answerKeyword)) {
+                SoundFX.playSuccess();
+                document.getElementById(`clue-status-${clueId}`).innerHTML = "🟢 تم الحل بنجاح!";
+                document.getElementById(`clue-status-${clueId}`).className = "text-xs font-bold text-emerald-500";
+                document.getElementById(`clue-container-${clueId}`).classList.add('bg-emerald-50', 'border-emerald-300');
+                
+                if (!AppState.solvedClues.includes(clueId)) {
+                    AppState.solvedClues.push(clueId);
+                    addPoints(10);
+                }
+                
+                // Show custom validation box
+                showCustomMessage(`🎉 رائع! خمنت اللغز رقم ${clueId} بنجاح وحصلت على ١٠ نقاط!`);
+                saveState();
+            } else {
+                SoundFX.playWrong();
+                showCustomMessage(`❌ خطأ! الجواب غير صحيح يا بطل، فكر وحاول مجدداً!`);
+            }
+        }
+
+        // Canvas Coloring Book Implementation
+        let canvas, ctx, isDrawing = false;
+        let activeColor = '#E10600';
+
+        function initCanvas() {
+            canvas = document.getElementById('drawing-canvas');
+            if (!canvas) return;
+            ctx = canvas.getContext('2d');
+            
+            // Set canvas stroke settings
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+            ctx.lineWidth = document.getElementById('brush-size').value;
+            
+            // Mouse Listeners
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+            
+            // Touch Listeners for mobile/iPad compatibility
+            canvas.addEventListener('touchstart', startDrawingTouch, { passive: false });
+            canvas.addEventListener('touchmove', drawTouch, { passive: false });
+            canvas.addEventListener('touchend', stopDrawing);
+
+            // Load default Template
+            loadTemplate('pot');
+        }
+
+        function setColor(color) {
+            SoundFX.playClick();
+            activeColor = color;
+            awardBadge('artist');
+        }
+
+        function clearCanvas() {
+            SoundFX.playClick();
+            ctx.fillStyle = "#FFFFFF";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            // Redraw current selected template outlines
+            redrawTemplateOutlines();
+        }
+
+        let currentTemplate = 'pot';
+
+        function loadTemplate(type) {
+            SoundFX.playClick();
+            currentTemplate = type;
+            ctx.fillStyle = "#FFFFFF";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            redrawTemplateOutlines();
+        }
+
+        function redrawTemplateOutlines() {
+            ctx.strokeStyle = '#CCCCCC';
+            ctx.lineWidth = 3;
+            
+            if (currentTemplate === 'pot') {
+                // Draw simple outlined Pottery Jar
+                ctx.beginPath();
+                ctx.arc(200, 240, 80, 0, Math.PI * 2); // Body
+                ctx.moveTo(170, 160);
+                ctx.lineTo(230, 160); // Neck
+                ctx.lineTo(220, 120);
+                ctx.lineTo(180, 120);
+                ctx.closePath();
+                // Handles
+                ctx.moveTo(120, 240);
+                ctx.quadraticCurveTo(80, 200, 150, 180);
+                ctx.moveTo(280, 240);
+                ctx.quadraticCurveTo(320, 200, 250, 180);
+                ctx.stroke();
+            } else if (currentTemplate === 'ship') {
+                // Draw Carthage Ship
+                ctx.beginPath();
+                ctx.moveTo(50, 250);
+                ctx.lineTo(350, 250);
+                ctx.quadraticCurveTo(380, 250, 360, 290);
+                ctx.lineTo(100, 290);
+                ctx.quadraticCurveTo(40, 290, 50, 250); // Hull
+                // Mast & Sail
+                ctx.moveTo(200, 250);
+                ctx.lineTo(200, 80);
+                ctx.moveTo(200, 90);
+                ctx.quadraticCurveTo(280, 140, 200, 210); // Sail
+                ctx.stroke();
+            } else if (currentTemplate === 'camel') {
+                // Draw Cute Desert Camel outline
+                ctx.beginPath();
+                ctx.arc(260, 130, 25, 0, Math.PI * 2); // Head
+                ctx.moveTo(240, 140);
+                ctx.quadraticCurveTo(190, 200, 150, 180); // Neck
+                ctx.arc(140, 180, 45, 0, Math.PI); // Body / Hump
+                // Legs
+                ctx.moveTo(110, 225); ctx.lineTo(110, 340);
+                ctx.moveTo(170, 225); ctx.lineTo(170, 340);
+                ctx.stroke();
+            }
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            ctx.beginPath();
+            ctx.moveTo(e.offsetX, e.offsetY);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            ctx.strokeStyle = activeColor;
+            ctx.lineWidth = document.getElementById('brush-size').value;
+            ctx.lineTo(e.offsetX, e.offsetY);
+            ctx.stroke();
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+        }
+
+        // Touch input helper
+        function startDrawingTouch(e) {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            isDrawing = true;
+            ctx.beginPath();
+            ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+        }
+
+        function drawTouch(e) {
+            e.preventDefault();
+            if (!isDrawing) return;
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            ctx.strokeStyle = activeColor;
+            ctx.lineWidth = document.getElementById('brush-size').value;
+            ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+            ctx.stroke();
+        }
+
+        function triggerDownload() {
+            SoundFX.playClick();
+            const dataUrl = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.download = 'my-tunisian-drawing.png';
+            link.href = dataUrl;
+            link.click();
+            showCustomMessage("🖼️ تم تحميل وحفظ تلوينتك الرائعة بنجاح! شاركها مع عائلتك!");
+        }
+
+        // Custom message popup box without window.alert()
+        function showCustomMessage(msg) {
+            const container = document.createElement('div');
+            container.className = "fixed bottom-4 left-4 right-4 md:left-auto md:max-w-md bg-slate-900 text-white rounded-2xl p-4 border-2 border-sunnyYellow shadow-2xl z-50 flex items-center justify-between space-x-3 space-x-reverse animate-bounce";
+            container.innerHTML = `
+                <div class="flex items-center space-x-2 space-x-reverse">
+                    <span class="text-2xl">🇹🇳</span>
+                    <span class="text-sm font-bold">${msg}</span>
+                </div>
+                <button onclick="this.parentElement.remove()" class="text-white hover:text-sunnyYellow font-black px-2">&times;</button>
+            `;
+            document.body.appendChild(container);
+            setTimeout(() => { container.remove(); }, 6000);
+        }
+
+        // Play Intro Video Placeholder Simulation
+        function playIntroVideo() {
+            SoundFX.playSuccess();
+            showCustomMessage("🎬 مبروك! قمت بمشاهدة الفيديو الترحيبي وركوب المنطاد الافتراضي!");
+            addPoints(10);
+        }
+
+        // Parents form submission
+        function submitRecommendation(e) {
+            e.preventDefault();
+            SoundFX.playSuccess();
+            const parentName = document.getElementById('rec-parent-name').value;
+            const placeName = document.getElementById('rec-place-name').value;
+            const desc = document.getElementById('rec-desc').value;
+
+            const newList = document.getElementById('added-recommendations-list');
+            const newElem = document.createElement('div');
+            newElem.className = "p-2 bg-emerald-50 rounded-xl border border-emerald-300 text-xs leading-relaxed font-semibold transition transform scale-95";
+            newElem.innerHTML = `<span class="font-bold text-emerald-700">${parentName}:</span> لقد زرت ${placeName} وهناك ${desc}.`;
+            newList.appendChild(newElem);
+
+            // Clear inputs
+            document.getElementById('parents-recommendation-form').reset();
+            addPoints(10);
+            showCustomMessage("📬 شكراً لمشاركتك! تم إضافة توصيتك وتحديث قائمة السياحة العائلية تونس!");
+        }
+
+        // Avatar selector operations
+        function openAvatarSelector() {
+            SoundFX.playClick();
+            document.getElementById('avatar-modal').classList.remove('hidden');
+        }
+
+        let tempSelectedAvatar = '';
+
+        function selectAvatarOption(avatarKey) {
+            SoundFX.playClick();
+            document.querySelectorAll('.avatar-option').forEach(el => {
+                el.classList.remove('border-skyBlue', 'bg-sky-50');
+            });
+            document.getElementById(`opt-${avatarKey}`).classList.add('border-skyBlue', 'bg-sky-50');
+            tempSelectedAvatar = avatarKey;
+        }
+
+        function confirmAvatarSelection() {
+            const nameInput = document.getElementById('avatar-input-name').value.trim();
+            if (!nameInput) {
+                showCustomMessage("⚠️ من فضلك اكتب اسمك الجميل أولاً!");
+                return;
+            }
+            if (!tempSelectedAvatar) {
+                showCustomMessage("⚠️ من فضلك اختر رفيقاً من الأبطال للمغامرة!");
+                return;
+            }
+
+            AppState.avatar = tempSelectedAvatar;
+            AppState.avatarName = nameInput;
+            saveState();
+
+            document.getElementById('avatar-modal').classList.add('hidden');
+            updateUIElements();
+            SoundFX.playSuccess();
+            showCustomMessage(`🚀 أهلاً بك يا بطل ${nameInput}! تبدأ رحلتك التفاعلية الآن!`);
+        }
+
+        // Points & Badge rewarding dynamics
+        function addPoints(amt) {
+            AppState.points += amt;
+            saveState();
+            updateUIElements();
+        }
+
+        function awardBadge(badgeKey) {
+            if (!AppState.badges.includes(badgeKey)) {
+                AppState.badges.push(badgeKey);
+                SoundFX.playBadge();
+                saveState();
+                updateUIElements();
+                createConfetti();
+                showCustomMessage(`🏆 يا للروعة! لقد حصلت على وسام جديد: ${getBadgeName(badgeKey)}!`);
+            }
+        }
+
+        function getBadgeName(key) {
+            const m = {
+                'carthage': 'مكتشف قرطاج 🛡️',
+                'desert': 'صديق الصحراء 🐫',
+                'explorer': 'رحّالة تونس 🗺️',
+                'artist': 'فنان تونس الرقمي 🎨'
+            };
+            return m[key] || key;
+        }
+
+        function updateUIElements() {
+            document.getElementById('header-points').innerText = AppState.points;
+            
+            // Render active avatar badge state
+            const avatarStatus = document.getElementById('avatar-status');
+            const avatarEmoji = {
+                'hannibal': '🛡️',
+                'jasmine': '🌸',
+                'fennec': '🦊',
+                'sailor': '⛵'
+            }[AppState.avatar] || '👤';
+
+            avatarStatus.innerHTML = `
+                <span class="text-xl">${avatarEmoji}</span>
+                <span class="text-xs font-black text-slate-800">${AppState.avatarName}</span>
+            `;
+
+            // Active locked/unlocked badges visually
+            document.querySelectorAll('.badge-item').forEach(el => {
+                const badgeId = el.id.replace('badge-', '');
+                const grayscale = el.querySelector('.grayscale-element');
+                if (AppState.badges.includes(badgeId)) {
+                    el.classList.remove('opacity-40', 'bg-slate-50', 'border-dashed');
+                    el.classList.add('bg-amber-100', 'border-amber-400', 'border-2', 'scale-105');
+                    if (grayscale) grayscale.classList.remove('grayscale');
+                } else {
+                    el.classList.add('opacity-40', 'bg-slate-50', 'border-dashed');
+                    el.classList.remove('bg-amber-100', 'border-amber-400', 'border-2', 'scale-105');
+                    if (grayscale) grayscale.classList.add('grayscale');
+                }
+            });
+        }
+
+        // Reset everything to start fresh
+        function resetAdventure() {
+            SoundFX.playClick();
+            if (confirm("هل أنت متأكد من رغبتك في إعادة مغامرة الاستكشاف وتصفير الأوسمة والنقاط بمشروعك؟")) {
+                localStorage.clear();
+                AppState.avatar = '';
+                AppState.avatarName = 'البطل الصغير';
+                AppState.points = 0;
+                AppState.badges = [];
+                AppState.solvedClues = [];
+                AppState.quizState.quiz1 = { current: 0, score: 0, completed: false };
+                AppState.quizState.quiz2 = { current: 0, score: 0, completed: false };
+                
+                openAvatarSelector();
+                updateUIElements();
+                switchTab('home');
+            }
+        }
+
+        // Fun Confetti Particle Animation
+        function createConfetti() {
+            const colors = ['#E10600', '#38BDF8', '#FBBF24', '#34D399', '#F43F5E'];
+            for (let i = 0; i < 40; i++) {
+                const conf = document.createElement('div');
+                conf.className = 'confetti';
+                conf.style.left = Math.random() * 100 + 'vw';
+                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                conf.style.animationDelay = Math.random() * 1.5 + 's';
+                document.body.appendChild(conf);
+                setTimeout(() => { conf.remove(); }, 2500);
+            }
+        }
+
+        // App Initial Launch On Load
+        window.onload = function () {
+            // If avatar is not configured yet, pop modal
+            if (!AppState.avatar) {
+                document.getElementById('avatar-modal').classList.remove('hidden');
+            } else {
+                document.getElementById('avatar-modal').classList.add('hidden');
+            }
+            
+            updateUIElements();
+            selectMapRegion('north'); // Default active map region on start
+        };
+    </script>
+</body>
+</html>

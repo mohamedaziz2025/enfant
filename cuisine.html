@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Southern Cuisine | Southern Tunisia Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>tailwind.config={theme:{extend:{fontFamily:{nunito:['Nunito','sans-serif']},colors:{tunisRed:'#E10600',skyBlue:'#38BDF8',sunnyYellow:'#FBBF24',jungleGreen:'#34D399'},animation:{'bounce-slow':'bounce 3s infinite','pulse-slow':'pulse 4s cubic-bezier(0.4,0,0.6,1) infinite'},keyframes:{wiggle:{'0%,100%':{transform:'rotate(-3deg)'},'50%':{transform:'rotate(3deg)'}}}}}}
+    </script>
+    <style>
+        body{font-family:'Nunito',sans-serif;background:#FFF7ED}
+        ::-webkit-scrollbar{width:10px}::-webkit-scrollbar-thumb{background:#F97316;border-radius:5px}
+        .confetti{position:fixed;width:10px;height:10px;border-radius:50%;pointer-events:none}
+        @keyframes confettiFall{0%{transform:translateY(-50px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(360deg);opacity:0}}
+        .custom-toast{animation:slideUp .3s ease}
+        @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+        .nav-scroll{overflow-x:auto;scrollbar-width:none}
+        .nav-scroll::-webkit-scrollbar{display:none}
+        .dish-card{transition:transform .3s ease,box-shadow .3s ease;cursor:pointer}
+        .dish-card:hover{transform:translateY(-6px);box-shadow:0 15px 35px rgba(249,115,22,.18)}
+        .recipe-panel{display:none}
+        .recipe-panel.open{display:block;animation:slideDown .35s ease}
+        @keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+    </style>
+</head>
+<body class="overflow-x-hidden text-slate-800">
+
+<!-- AVATAR MODAL -->
+<div id="avatar-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 max-w-2xl w-full border-8 border-yellow-400 shadow-2xl relative overflow-y-auto max-h-[90vh]">
+        <h2 class="text-2xl font-black text-center text-slate-900 mb-4">Choose Your Companion 🏜️</h2>
+        <div class="mb-5"><input type="text" id="avatar-input-name" class="w-full px-4 py-3 rounded-xl border-4 border-sky-400 text-lg font-bold outline-none focus:border-yellow-400 transition" placeholder="Write your name..."></div>
+        <div class="grid grid-cols-4 gap-3 mb-6">
+            <div onclick="selectAvatarOption('hannibal')" id="opt-hannibal" class="avatar-option border-4 border-slate-200 rounded-2xl p-3 cursor-pointer text-center hover:bg-sky-50 transition"><div class="text-4xl mb-1">🛡️</div><div class="font-black text-xs">Hannibal</div></div>
+            <div onclick="selectAvatarOption('jasmine')"  id="opt-jasmine"  class="avatar-option border-4 border-slate-200 rounded-2xl p-3 cursor-pointer text-center hover:bg-sky-50 transition"><div class="text-4xl mb-1">🌸</div><div class="font-black text-xs">Jasmine</div></div>
+            <div onclick="selectAvatarOption('fennec')"   id="opt-fennec"   class="avatar-option border-4 border-slate-200 rounded-2xl p-3 cursor-pointer text-center hover:bg-sky-50 transition"><div class="text-4xl mb-1">🦊</div><div class="font-black text-xs">Fennec</div></div>
+            <div onclick="selectAvatarOption('sailor')"   id="opt-sailor"   class="avatar-option border-4 border-slate-200 rounded-2xl p-3 cursor-pointer text-center hover:bg-sky-50 transition"><div class="text-4xl mb-1">⛵</div><div class="font-black text-xs">Sailor</div></div>
+        </div>
+        <div class="flex justify-center"><button onclick="confirmAvatarSelection()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xl px-10 py-3 rounded-2xl shadow-lg border-b-4 border-emerald-700 transition">Let's Go! 🚀</button></div>
+    </div>
+</div>
+
+<!-- HEADER -->
+<header class="bg-gradient-to-b from-orange-500 to-amber-400 pb-6 relative overflow-hidden shadow-lg border-b-4 border-dashed border-orange-400">
+    <div class="absolute top-4 right-6 text-white text-4xl opacity-40 animate-bounce-slow">☀️</div>
+    <div class="container mx-auto px-4 pt-4 flex flex-col md:flex-row justify-between items-center relative z-10">
+        <a href="index.html" class="flex items-center gap-3">
+            <div class="bg-white p-3 rounded-full shadow-md border-4 border-yellow-400 hover:scale-110 transition"><span class="text-3xl">🏜️</span></div>
+            <div><h1 class="text-2xl font-black text-white drop-shadow">Southern Tunisia Explorer</h1>
+            <p class="text-sm font-bold text-amber-100">Discover the Desert South 🌍</p></div>
+        </a>
+        <div class="flex flex-wrap items-center justify-center gap-3 mt-4 md:mt-0">
+            <div class="bg-amber-100 border-2 border-amber-400 px-4 py-2 rounded-full flex items-center gap-2 shadow-inner"><span class="text-xl">⭐</span><div><div class="text-xs text-amber-800 font-bold">Points</div><div class="text-lg font-black text-amber-600" id="header-points">0</div></div></div>
+            <div id="level-badge" class="border-2 px-3 py-1 rounded-full text-xs font-black shadow">🌱 Beginner Explorer</div>
+            <div id="avatar-status" class="bg-white border-2 border-teal-400 px-4 py-1 rounded-full flex items-center gap-2 shadow cursor-pointer" onclick="openAvatarSelector()"></div>
+            <button onclick="resetAdventure()" class="text-xs bg-red-100 hover:bg-red-200 text-red-700 px-2.5 py-1.5 rounded-lg border border-red-300 font-bold transition"><i class="fas fa-redo-alt mr-1"></i> Reset</button>
+        </div>
+    </div>
+    <nav class="container mx-auto px-4 mt-5 relative z-10">
+        <div class="nav-scroll">
+            <div class="flex gap-2 justify-start md:justify-center bg-white/80 p-2 rounded-2xl shadow border-2 border-white min-w-max md:mx-auto">
+                <a id="nav-home"     href="index.html"     class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">🏠 Home</a>
+                <a id="nav-discover" href="decouvrir.html" class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">🧭 Discover</a>
+                <a id="nav-stories"  href="histoires.html" class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">📖 Stories</a>
+                <a id="nav-play"     href="jeux.html"      class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">🎮 Play</a>
+                <a id="nav-cuisine"  href="cuisine.html"   class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">🍲 Cuisine</a>
+                <a id="nav-parents"  href="parents.html"   class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">👪 Parents</a>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<main class="container mx-auto px-4 py-8 max-w-6xl space-y-10">
+
+    <!-- HERO -->
+    <div class="text-center space-y-3">
+        <span class="text-6xl">🍲</span>
+        <h2 class="text-3xl font-black text-slate-900">Southern Tunisian Cuisine</h2>
+        <p class="text-slate-600 font-bold max-w-2xl mx-auto leading-relaxed">Discover the delicious flavors of the Tunisian South! Click on any dish to learn its ingredients and how to make it.</p>
+        <div class="inline-block bg-orange-100 border-2 border-orange-300 px-5 py-2 rounded-full text-sm font-black text-orange-700">
+            +15 points for exploring every 3 dishes 🏆
+        </div>
+    </div>
+
+    <!-- DISHES GRID -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- Dish 1: Mesfouf -->
+        <div class="dish-card bg-white rounded-3xl overflow-hidden shadow-md border-4 border-orange-200" onclick="toggleRecipe('mesfouf')">
+            <div class="h-48 overflow-hidden relative">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/1/1d/Royal_Tunisian_couscous.JPG" class="w-full h-full object-cover" alt="Mesfouf" onerror="this.src='https://placehold.co/600x400/fff7ed/c2410c?text=Mesfouf'">
+                <div class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-black text-orange-600 shadow">Click to learn →</div>
+            </div>
+            <div class="p-5 space-y-3">
+                <div class="flex items-center gap-2">
+                    <span class="text-3xl">🫕</span>
+                    <div>
+                        <h3 class="text-lg font-black text-slate-900">Mesfouf — Sweet Date Couscous</h3>
+                        <span class="text-xs text-orange-600 font-black bg-orange-100 px-2 py-0.5 rounded-full">A southern Tunisian specialty!</span>
+                    </div>
+                </div>
+                <p class="text-slate-600 text-sm font-bold">The sweeter cousin of regular couscous — made with fragrant dates, raisins, and almonds. A beloved dessert couscous unique to the oasis towns of the south!</p>
+                <div class="flex gap-2 text-xs">
+                    <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full font-bold">🕐 30 min</span>
+                    <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full font-bold">😊 Easy</span>
+                </div>
+            </div>
+            <div id="recipe-mesfouf" class="recipe-panel bg-orange-50 border-t-4 border-orange-200 p-5 space-y-4">
+                <h4 class="font-black text-orange-800">📋 Ingredients:</h4>
+                <p class="text-sm font-bold text-slate-700">Fine couscous • Deglet Nour dates (pitted) • golden raisins • blanched almonds • butter • powdered sugar • orange blossom water</p>
+                <h4 class="font-black text-orange-800">👨‍🍳 Easy Steps for Kids:</h4>
+                <div class="space-y-2 text-sm font-bold text-slate-700">
+                    <div class="flex gap-2 items-start"><span class="bg-orange-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0">1</span><span>Steam the couscous until fluffy and soft</span></div>
+                    <div class="flex gap-2 items-start"><span class="bg-orange-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0">2</span><span>Mix in butter and a spoonful of powdered sugar</span></div>
+                    <div class="flex gap-2 items-start"><span class="bg-orange-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0">3</span><span>Add the dates, raisins, and almonds on top</span></div>
+                    <div class="flex gap-2 items-start"><span class="bg-orange-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0">4</span><span>Sprinkle orange blossom water and serve warm!</span></div>
+                </div>
+                <div class="bg-white border-l-4 border-yellow-400 p-3 rounded-xl text-xs font-bold text-slate-600">
+                    💡 Did you know? Mesfouf is served at weddings and special occasions in the oasis towns of Tozeur and Kebili!
+                </div>
+            </div>
+        </div>
+
+        <!-- Dish 2: Asida -->
+        <div class="dish-card bg-white rounded-3xl overflow-hidden shadow-md border-4 border-amber-200" onclick="toggleRecipe('asida')">
+            <div class="h-48 overflow-hidden relative">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Eating_Asida.JPG" class="w-full h-full object-cover" alt="Asida" onerror="this.src='https://placehold.co/600x400/fffbeb/d97706?text=Asida'">
+                <div class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-black text-amber-600 shadow">Click to learn →</div>
+            </div>
+            <div class="p-5 space-y-3">
+                <div class="flex items-center gap-2">
+                    <span class="text-3xl">🍮</span>
+                    <div>
+                        <h3 class="text-lg font-black text-slate-900">Asida — Desert Honey Pudding</h3>
+                        <span class="text-xs text-amber-600 font-black bg-amber-100 px-2 py-0.5 rounded-full">Traditional Saharan dessert</span>
+                    </div>
+                </div>
+                <p class="text-slate-600 text-sm font-bold">A warm, thick semolina pudding topped with date syrup and butter — the ultimate comfort food of the Tunisian desert! Simple, sweet, and absolutely delicious.</p>
+                <div class="flex gap-2 text-xs">
+                    <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full font-bold">🕐 20 min</span>
+                    <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full font-bold">😊 Very Easy</span>
+                </div>
+            </div>
+            <div id="recipe-asida" class="recipe-panel bg-amber-50 border-t-4 border-amber-200 p-5 space-y-4">
+                <h4 class="font-black text-amber-800">📋 Ingredients:</h4>
+                <p class="text-sm font-bold text-slate-700">Fine semolina • water • salt • butter • date syrup (or honey) • optional: ground cinnamon</p>
+                <h4 class="font-black text-amber-800">👨‍🍳 Easy Steps for Kids:</h4>
+                <div class="space-y-2 text-sm font-bold text-slate-700">
+                    <div class="flex gap-2 items-start"><span class="bg-amber-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0">1</span><span>Boil water with a pinch of salt</span></div>
+                    <div class="flex gap-2 items-start"><span class="bg-amber-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0">2</span><span>Pour in the semolina slowly, stirring constantly until thick</span></div>
+                    <div class="flex gap-2 items-start"><span class="bg-amber-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0">3</span><span>Spoon into bowls and make a little well in the center</span></div>
+                    <div class="flex gap-2 items-start"><span class="bg-amber-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0">4</span><span>Fill the well with butter and pour warm date syrup over it!</span></div>
+                </div>
+                <div class="bg-white border-l-4 border-amber-400 p-3 rounded-xl text-xs font-bold text-slate-600">
+                    💡 Did you know? Asida has been eaten in the Sahara for over 1,000 years — it's desert energy food!
+                </div>
+            </div>
+        </div>
+
+        <!-- Dish 3: Makroud -->
+        <div class="dish-card bg-white rounded-3xl overflow-hidden shadow-md border-4 border-yellow-200" onclick="toggleRecipe('makroud')">
+            <div class="h-48 overflow-hidden relative">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/7/7f/Makrouds.JPG" class="w-full h-full object-cover" alt="Makroud" onerror="this.src='https://placehold.co/600x400/fefce8/ca8a04?text=Makroud'">
+                <div class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-black text-yellow-600 shadow">Click to learn →</div>
+            </div>
+            <div class="p-5 space-y-3">
+                <div class="flex items-center gap-2">
+                    <span class="text-3xl">🍪</span>
+                    <div>
+                        <h3 class="text-lg font-black text-slate-900">Makroud — Date Diamond Pastry</h3>
+                        <span class="text-xs text-yellow-600 font-black bg-yellow-100 px-2 py-0.5 rounded-full">Famous south Tunisian sweet</span>
+                    </div>
+                </div>
+                <p class="text-slate-600 text-sm font-bold">Golden diamond-shaped pastry filled with a sweet date paste and fried or baked until crispy — then soaked in honey! Sold in every souq in southern Tunisia.</p>
+                <div class="flex gap-2 text-xs">
+                    <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full font-bold">🕐 50 min</span>
+                    <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-bold">🍯 Sweet Treat</span>
+                </div>
+            </div>
+            <div id="recipe-makroud" class="recipe-panel bg-yellow-50 border-t-4 border-yellow-200 p-5 space-y-4">
+                <h4 class="font-black text-yellow-800">📋 Ingredients:</h4>
+                <p class="text-sm font-bold text-slate-700">Semolina • butter • water • salt (for dough) • date paste • cinnamon • oil for frying • honey for soaking</p>
+                <h4 class="font-black text-yellow-800">👨‍🍳 Easy Steps for Kids:</h4>
+                <div class="space-y-2 text-sm font-bold text-slate-700">
+                    <div class="flex gap-2 items-start"><span class="bg-yellow-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0">1</span><span>Mix semolina, butter, and water into a firm dough</span></div>
+                    <div class="flex gap-2 items-start"><span class="bg-yellow-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0">2</span><span>Flatten the dough and place a line of date paste in the center</span></div>
+                    <div class="flex gap-2 items-start"><span class="bg-yellow-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0">3</span><span>Fold the dough around the dates and cut into diamond shapes</span></div>
+                    <div class="flex gap-2 items-start"><span class="bg-yellow-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0">4</span><span>Fry until golden, then dip in warm honey right away!</span></div>
+                </div>
+                <div class="bg-white border-l-4 border-yellow-400 p-3 rounded-xl text-xs font-bold text-slate-600">
+                    💡 Did you know? Makroud from Tozeur is so famous it was given a geographic indication label by the European Union!
+                </div>
+            </div>
+        </div>
+
+        <!-- Dish 4: Brik -->
+        <div class="dish-card bg-white rounded-3xl overflow-hidden shadow-md border-4 border-red-200" onclick="toggleRecipe('brik')">
+            <div class="h-48 overflow-hidden relative">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/a/a3/Brik_Edennouni.JPG" class="w-full h-full object-cover" alt="Brik" onerror="this.src='https://placehold.co/600x400/fee2e2/dc2626?text=Brik'">
+                <div class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-black text-red-600 shadow">Click to learn →</div>
+            </div>
+            <div class="p-5 space-y-3">
+                <div class="flex items-center gap-2">
+                    <span class="text-3xl">🥚</span>
+                    <div>
+                        <h3 class="text-lg font-black text-slate-900">Brik — Crispy Egg Pastry</h3>
+                        <span class="text-xs text-red-600 font-black bg-red-100 px-2 py-0.5 rounded-full">Brik à l'œuf</span>
+                    </div>
+                </div>
+                <p class="text-slate-600 text-sm font-bold">A crispy pastry leaf filled with egg, tuna, and parsley — fried to golden perfection! Tunisia's most famous street food and Ramadan favourite, enjoyed all across the south!</p>
+                <div class="flex gap-2 text-xs">
+                    <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full font-bold">🕐 15 min</span>
+                    <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full font-bold">😊 Very Easy</span>
+                </div>
+            </div>
+            <div id="recipe-brik" class="recipe-panel bg-red-50 border-t-4 border-red-200 p-5 space-y-4">
+                <h4 class="font-black text-red-800">📋 Ingredients:</h4>
+                <p class="text-sm font-bold text-slate-700">Malsouka pastry leaf • 1 egg • canned tuna • fresh parsley • optional: harissa • oil for frying</p>
+                <h4 class="font-black text-red-800">👨‍🍳 Easy Steps for Kids:</h4>
+                <div class="space-y-2 text-sm font-bold text-slate-700">
+                    <div class="flex gap-2 items-start"><span class="bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0">1</span><span>Lay the pastry leaf flat on a clean board</span></div>
+                    <div class="flex gap-2 items-start"><span class="bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0">2</span><span>Place tuna and parsley in the center, then crack the egg on top</span></div>
+                    <div class="flex gap-2 items-start"><span class="bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0">3</span><span>Fold the pastry into a tight triangle so the egg stays inside</span></div>
+                    <div class="flex gap-2 items-start"><span class="bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0">4</span><span>Fry in hot oil until golden and crispy, serve immediately!</span></div>
+                </div>
+                <div class="bg-white border-l-4 border-red-400 p-3 rounded-xl text-xs font-bold text-slate-600">
+                    💡 Did you know? The word "Brik" comes from the Turkish word "börek" from when the Ottoman Empire ruled Tunisia!
+                </div>
+            </div>
+        </div>
+
+        <!-- Dish 5: Couscous Merguez -->
+        <div class="dish-card bg-white rounded-3xl overflow-hidden shadow-md border-4 border-pink-200" onclick="toggleRecipe('couscous')">
+            <div class="h-48 overflow-hidden relative">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/b/bf/Couscous_merguez%2C_kedid%2C_Tunisie_2021.jpg" class="w-full h-full object-cover" alt="Couscous" onerror="this.src='https://placehold.co/600x400/fdf2f8/be185d?text=Couscous'">
+                <div class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-black text-pink-600 shadow">Click to learn →</div>
+            </div>
+            <div class="p-5 space-y-3">
+                <div class="flex items-center gap-2">
+                    <span class="text-3xl">🫕</span>
+                    <div>
+                        <h3 class="text-lg font-black text-slate-900">Couscous with Merguez</h3>
+                        <span class="text-xs text-pink-600 font-black bg-pink-100 px-2 py-0.5 rounded-full">Southern spicy style!</span>
+                    </div>
+                </div>
+                <p class="text-slate-600 text-sm font-bold">Tunisia's national dish gets a spicy southern twist! Fluffy couscous served with merguez sausages, vegetables, and the famous southern harissa paste — a UNESCO-listed heritage dish!</p>
+                <div class="flex gap-2 text-xs">
+                    <span class="bg-pink-100 text-pink-700 px-2 py-1 rounded-full font-bold">🕐 45 min</span>
+                    <span class="bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-bold">🍽️ Main dish</span>
+                </div>
+            </div>
+            <div id="recipe-couscous" class="recipe-panel bg-pink-50 border-t-4 border-pink-200 p-5 space-y-4">
+                <h4 class="font-black text-pink-800">📋 Ingredients:</h4>
+                <p class="text-sm font-bold text-slate-700">Couscous semolina • merguez sausages • zucchini • carrots • tomato paste • chickpeas • harissa paste • olive oil • spices</p>
+                <h4 class="font-black text-pink-800">👨‍🍳 Easy Steps for Kids:</h4>
+                <div class="space-y-2 text-sm font-bold text-slate-700">
+                    <div class="flex gap-2 items-start"><span class="bg-pink-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0">1</span><span>Cut the vegetables (with adult help!) and brown the merguez</span></div>
+                    <div class="flex gap-2 items-start"><span class="bg-pink-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0">2</span><span>Make a rich tomato broth with chickpeas and spices</span></div>
+                    <div class="flex gap-2 items-start"><span class="bg-pink-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0">3</span><span>Steam the couscous above the broth for 20 minutes</span></div>
+                    <div class="flex gap-2 items-start"><span class="bg-pink-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0">4</span><span>Arrange vegetables and sausages on top and serve steaming hot!</span></div>
+                </div>
+                <div class="bg-white border-l-4 border-pink-400 p-3 rounded-xl text-xs font-bold text-slate-600">
+                    💡 Did you know? Couscous was inscribed on UNESCO's Intangible Cultural Heritage list in 2020!
+                </div>
+            </div>
+        </div>
+
+        <!-- Dish 6: Lablabi -->
+        <div class="dish-card bg-white rounded-3xl overflow-hidden shadow-md border-4 border-emerald-200" onclick="toggleRecipe('lablabi')">
+            <div class="h-48 overflow-hidden relative">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Bol_de_Lablabi%2C_Tunisie%2C_d%C3%A9cembre_2017.jpg" class="w-full h-full object-cover" alt="Lablabi" onerror="this.src='https://placehold.co/600x400/ecfdf5/047857?text=Lablabi'">
+                <div class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-black text-emerald-600 shadow">Click to learn →</div>
+            </div>
+            <div class="p-5 space-y-3">
+                <div class="flex items-center gap-2">
+                    <span class="text-3xl">🥣</span>
+                    <div>
+                        <h3 class="text-lg font-black text-slate-900">Lablabi — Spiced Chickpea Soup</h3>
+                        <span class="text-xs text-emerald-600 font-black bg-emerald-100 px-2 py-0.5 rounded-full">Beloved Tunisian breakfast</span>
+                    </div>
+                </div>
+                <p class="text-slate-600 text-sm font-bold">A warming bowl of chickpeas in a garlicky cumin broth, poured over crusty bread — the ultimate Tunisian breakfast! Sold in steaming bowls at markets all over southern Tunisia on cold mornings!</p>
+                <div class="flex gap-2 text-xs">
+                    <span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full font-bold">🕐 30 min</span>
+                    <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-bold">🍽️ Breakfast</span>
+                </div>
+            </div>
+            <div id="recipe-lablabi" class="recipe-panel bg-emerald-50 border-t-4 border-emerald-200 p-5 space-y-4">
+                <h4 class="font-black text-emerald-800">📋 Ingredients:</h4>
+                <p class="text-sm font-bold text-slate-700">Cooked chickpeas • stale baguette • cumin • garlic • lemon juice • olive oil • harissa • salt</p>
+                <h4 class="font-black text-emerald-800">👨‍🍳 Easy Steps for Kids:</h4>
+                <div class="space-y-2 text-sm font-bold text-slate-700">
+                    <div class="flex gap-2 items-start"><span class="bg-emerald-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0">1</span><span>Break the stale bread into chunks in the bottom of a bowl</span></div>
+                    <div class="flex gap-2 items-start"><span class="bg-emerald-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0">2</span><span>Pour the hot chickpea broth over the bread pieces</span></div>
+                    <div class="flex gap-2 items-start"><span class="bg-emerald-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0">3</span><span>Add chickpeas, cumin, and crushed garlic on top</span></div>
+                    <div class="flex gap-2 items-start"><span class="bg-emerald-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0">4</span><span>Drizzle with olive oil, lemon juice, and serve right away!</span></div>
+                </div>
+                <div class="bg-white border-l-4 border-emerald-400 p-3 rounded-xl text-xs font-bold text-slate-600">
+                    💡 Did you know? Lablabi sellers in southern Tunisia start serving from 5am when it's still cold outside!
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- TEASER -->
+    <div class="bg-gradient-to-r from-orange-500 to-amber-500 rounded-3xl p-6 text-white text-center shadow-lg">
+        <div class="text-4xl mb-3">🧑‍🍳</div>
+        <h3 class="text-2xl font-black mb-2">You're Now a Southern Tunisian Chef!</h3>
+        <p class="font-bold opacity-90 mb-4">You've discovered the delicious secrets of southern Tunisian cooking! Want to test your food knowledge?</p>
+        <a href="jeux.html" onclick="SoundFX.playClick()" class="inline-block bg-white text-orange-600 font-black px-8 py-3 rounded-2xl shadow-md border-b-4 border-amber-600 transition hover:bg-amber-50">
+            🎮 Play the Knowledge Quiz!
+        </a>
+    </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="bg-slate-900 text-white pt-10 pb-6 mt-16 border-t-8 border-orange-400">
+    <div class="container mx-auto px-4 max-w-5xl text-center">
+        <h4 class="text-xl font-black text-orange-400 mb-3">Southern Tunisian Cuisine 🍲</h4>
+        <div class="flex flex-wrap gap-2 justify-center text-xs font-bold mb-4">
+            <a href="index.html"     class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-lg transition">🏠 Home</a>
+            <a href="decouvrir.html" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-lg transition">🧭 Discover</a>
+            <a href="histoires.html" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-lg transition">📖 Stories</a>
+            <a href="jeux.html"      class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-lg transition">🎮 Play</a>
+            <a href="parents.html"   class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-lg transition">👪 Parents</a>
+        </div>
+        <p class="text-xs text-slate-500">&copy; 2026 — Southern Tunisia Explorer</p>
+    </div>
+</footer>
+
+<script src="js/app.js"></script>
+<script>
+let openedCount = 0;
+
+function toggleRecipe(key) {
+    SoundFX.playClick();
+    const panel = document.getElementById(`recipe-${key}`);
+    const wasOpen = panel.classList.contains('open');
+    document.querySelectorAll('.recipe-panel').forEach(p => p.classList.remove('open'));
+    if (!wasOpen) {
+        panel.classList.add('open');
+        panel.scrollIntoView({ behavior:'smooth', block:'nearest' });
+        openedCount++;
+        if (openedCount === 3) {
+            addPoints(15);
+            awardBadge('chef');
+            showCustomMessage('🍲 Amazing! You explored 3 dishes and earned +15 points and the Little Chef badge!');
+        }
+    }
+}
+</script>
+</body>
+</html>

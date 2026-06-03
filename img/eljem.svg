@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+  <defs>
+    <linearGradient id="sky2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F4A460"/>
+      <stop offset="60%" stop-color="#FFD59E"/>
+      <stop offset="100%" stop-color="#FFEBC8"/>
+    </linearGradient>
+  </defs>
+  <!-- Sky sunset -->
+  <rect width="600" height="400" fill="url(#sky2)"/>
+  <!-- Sun low -->
+  <circle cx="80" cy="320" r="55" fill="#FF8C00" opacity="0.7"/>
+  <!-- Ground -->
+  <rect x="0" y="310" width="600" height="90" fill="#D2B48C"/>
+  <rect x="0" y="315" width="600" height="30" fill="#C4A572"/>
+  <!-- Colosseum/Amphitheater - El Jem -->
+  <!-- Outer elliptical wall -->
+  <ellipse cx="300" cy="290" rx="240" ry="120" fill="#C8A96E" stroke="#A08040" stroke-width="4"/>
+  <ellipse cx="300" cy="290" rx="195" ry="95" fill="#8B6914"/>
+  <ellipse cx="300" cy="290" rx="145" ry="70" fill="#654F0F"/>
+  <!-- Arena floor -->
+  <ellipse cx="300" cy="295" rx="100" ry="50" fill="#D4A953"/>
+  <!-- Arched openings - bottom row -->
+  <g fill="#4A3000" stroke="#3A2000" stroke-width="1">
+    <!-- Left side arches -->
+    <path d="M 85 295 Q 85 265 105 265 Q 125 265 125 295 L 125 310 L 85 310 Z"/>
+    <path d="M 130 285 Q 130 255 150 255 Q 170 255 170 285 L 170 305 L 130 305 Z"/>
+    <!-- Right side arches -->
+    <path d="M 475 295 Q 475 265 495 265 Q 515 265 515 295 L 515 310 L 475 310 Z"/>
+    <path d="M 430 285 Q 430 255 450 255 Q 470 255 470 285 L 470 305 L 430 305 Z"/>
+  </g>
+  <!-- Top tier arches -->
+  <g fill="#5A3E00" opacity="0.8">
+    <path d="M 110 250 Q 110 228 128 228 Q 146 228 146 250 L 146 262 L 110 262 Z"/>
+    <path d="M 155 238 Q 155 216 173 216 Q 191 216 191 238 L 191 250 L 155 250 Z"/>
+    <path d="M 454 238 Q 454 216 472 216 Q 490 216 490 238 L 490 250 L 454 250 Z"/>
+    <path d="M 412 248 Q 412 226 430 226 Q 448 226 448 248 L 448 260 L 412 260 Z"/>
+  </g>
+  <!-- Main entrance arch -->
+  <path d="M 250 260 Q 250 190 300 190 Q 350 190 350 260 L 350 310 L 250 310 Z" fill="#3A2500"/>
+  <path d="M 258 260 Q 258 200 300 200 Q 342 200 342 260 L 342 305 L 258 305 Z" fill="#2A1800"/>
+  <!-- Horizontal lines (tiers) -->
+  <path d="M 75 270 Q 300 240 525 270" stroke="#A08040" stroke-width="3" fill="none"/>
+  <path d="M 95 245 Q 300 210 505 245" stroke="#A08040" stroke-width="3" fill="none"/>
+  <!-- Label -->
+  <rect x="155" y="355" width="290" height="36" rx="8" fill="#4A1C00" opacity="0.8"/>
+  <text x="300" y="379" text-anchor="middle" font-family="Cairo, Arial" font-size="18" fill="#FFD700" font-weight="bold">مدرج الجم الروماني</text>
+</svg>

@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discover the South | Southern Tunisia Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>tailwind.config={theme:{extend:{fontFamily:{nunito:['Nunito','sans-serif']},colors:{tunisRed:'#E10600',skyBlue:'#38BDF8',sunnyYellow:'#FBBF24',jungleGreen:'#34D399'},animation:{'bounce-slow':'bounce 3s infinite','pulse-slow':'pulse 4s cubic-bezier(0.4,0,0.6,1) infinite'},keyframes:{wiggle:{'0%,100%':{transform:'rotate(-3deg)'},'50%':{transform:'rotate(3deg)'}}}}}}
+    </script>
+    <style>
+        body{font-family:'Nunito',sans-serif;background:#FFF8F0}
+        ::-webkit-scrollbar{width:10px}::-webkit-scrollbar-thumb{background:#F97316;border-radius:5px}
+        .confetti{position:fixed;width:10px;height:10px;border-radius:50%;pointer-events:none}
+        @keyframes confettiFall{0%{transform:translateY(-50px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(360deg);opacity:0}}
+        .custom-toast{animation:slideUp .3s ease}
+        @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+        .nav-scroll{overflow-x:auto;scrollbar-width:none}
+        .nav-scroll::-webkit-scrollbar{display:none}
+        .discover-card{transition:transform .3s ease,box-shadow .3s ease}
+        .discover-card:hover{transform:translateY(-6px);box-shadow:0 12px 30px rgba(0,0,0,.15)}
+        .discover-card .card-img{transition:transform .4s ease;overflow:hidden}
+        .discover-card:hover .card-img img{transform:scale(1.08)}
+    </style>
+</head>
+<body class="overflow-x-hidden text-slate-800">
+
+<!-- AVATAR MODAL -->
+<div id="avatar-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 max-w-2xl w-full border-8 border-yellow-400 shadow-2xl relative overflow-y-auto max-h-[90vh]">
+        <h2 class="text-2xl font-black text-center text-slate-900 mb-4">Choose Your Companion 🏜️</h2>
+        <div class="mb-5"><input type="text" id="avatar-input-name" class="w-full px-4 py-3 rounded-xl border-4 border-sky-400 text-lg font-bold outline-none focus:border-yellow-400 transition" placeholder="Write your name..."></div>
+        <div class="grid grid-cols-4 gap-3 mb-6">
+            <div onclick="selectAvatarOption('hannibal')" id="opt-hannibal" class="avatar-option border-4 border-slate-200 rounded-2xl p-3 cursor-pointer text-center hover:bg-sky-50 transition"><div class="text-4xl mb-1">🛡️</div><div class="font-black text-xs">Hannibal</div></div>
+            <div onclick="selectAvatarOption('jasmine')"  id="opt-jasmine"  class="avatar-option border-4 border-slate-200 rounded-2xl p-3 cursor-pointer text-center hover:bg-sky-50 transition"><div class="text-4xl mb-1">🌸</div><div class="font-black text-xs">Jasmine</div></div>
+            <div onclick="selectAvatarOption('fennec')"   id="opt-fennec"   class="avatar-option border-4 border-slate-200 rounded-2xl p-3 cursor-pointer text-center hover:bg-sky-50 transition"><div class="text-4xl mb-1">🦊</div><div class="font-black text-xs">Fennec</div></div>
+            <div onclick="selectAvatarOption('sailor')"   id="opt-sailor"   class="avatar-option border-4 border-slate-200 rounded-2xl p-3 cursor-pointer text-center hover:bg-sky-50 transition"><div class="text-4xl mb-1">⛵</div><div class="font-black text-xs">Sailor</div></div>
+        </div>
+        <div class="flex justify-center"><button onclick="confirmAvatarSelection()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xl px-10 py-3 rounded-2xl shadow-lg border-b-4 border-emerald-700 transition">Let's Go! 🚀</button></div>
+    </div>
+</div>
+
+<!-- HEADER -->
+<header class="bg-gradient-to-b from-amber-500 to-orange-400 pb-6 relative overflow-hidden shadow-lg border-b-4 border-dashed border-amber-400">
+    <div class="absolute top-4 right-6 text-white text-4xl opacity-40 animate-bounce-slow">☀️</div>
+    <div class="absolute top-10 left-12 text-white text-5xl opacity-30 animate-pulse-slow">🌵</div>
+    <div class="container mx-auto px-4 pt-4 flex flex-col md:flex-row justify-between items-center relative z-10">
+        <a href="index.html" class="flex items-center gap-3">
+            <div class="bg-white p-3 rounded-full shadow-md border-4 border-yellow-400 hover:scale-110 transition"><span class="text-3xl">🏜️</span></div>
+            <div><h1 class="text-2xl font-black text-white drop-shadow">Southern Tunisia Explorer</h1>
+            <p class="text-sm font-bold text-amber-100">Discover the Desert South 🌍</p></div>
+        </a>
+        <div class="flex flex-wrap items-center justify-center gap-3 mt-4 md:mt-0">
+            <div class="bg-amber-100 border-2 border-amber-400 px-4 py-2 rounded-full flex items-center gap-2 shadow-inner"><span class="text-xl">⭐</span><div><div class="text-xs text-amber-800 font-bold">Points</div><div class="text-lg font-black text-amber-600" id="header-points">0</div></div></div>
+            <div id="level-badge" class="border-2 px-3 py-1 rounded-full text-xs font-black shadow">🌱 Beginner Explorer</div>
+            <div id="avatar-status" class="bg-white border-2 border-teal-400 px-4 py-1 rounded-full flex items-center gap-2 shadow cursor-pointer" onclick="openAvatarSelector()"></div>
+            <button onclick="resetAdventure()" class="text-xs bg-red-100 hover:bg-red-200 text-red-700 px-2.5 py-1.5 rounded-lg border border-red-300 font-bold transition"><i class="fas fa-redo-alt mr-1"></i> Reset</button>
+        </div>
+    </div>
+    <nav class="container mx-auto px-4 mt-5 relative z-10">
+        <div class="nav-scroll">
+            <div class="flex gap-2 justify-start md:justify-center bg-white/80 p-2 rounded-2xl shadow border-2 border-white min-w-max md:mx-auto">
+                <a id="nav-home"     href="index.html"     class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">🏠 Home</a>
+                <a id="nav-discover" href="decouvrir.html" class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">🧭 Discover</a>
+                <a id="nav-stories"  href="histoires.html" class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">📖 Stories</a>
+                <a id="nav-play"     href="jeux.html"      class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">🎮 Play</a>
+                <a id="nav-cuisine"  href="cuisine.html"   class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">🍲 Cuisine</a>
+                <a id="nav-parents"  href="parents.html"   class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">👪 Parents</a>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<main class="container mx-auto px-4 py-8 max-w-6xl space-y-8">
+    <div class="text-center max-w-2xl mx-auto space-y-2">
+        <span class="text-5xl">🧭</span>
+        <h2 class="text-3xl font-black text-slate-900">Discover Southern Tunisia</h2>
+        <p class="text-slate-600 font-bold leading-relaxed">Browse the amazing landmarks, natural wonders, and fun places of the beautiful Tunisian South!</p>
+    </div>
+
+    <!-- FILTER TABS -->
+    <div class="flex flex-wrap justify-center gap-3 border-b-4 border-dashed border-amber-200 pb-5">
+        <button onclick="filterDiscover('cultural')"    id="btn-discover-cultural"    class="discover-tab-btn bg-rose-500 text-white px-6 py-3 rounded-2xl font-black text-base shadow transition hover:opacity-90">🏛️ Culture & History</button>
+        <button onclick="filterDiscover('ecological')"  id="btn-discover-ecological"  class="discover-tab-btn bg-amber-100 text-amber-700 px-6 py-3 rounded-2xl font-black text-base shadow transition hover:bg-amber-200">🌵 Nature & Desert</button>
+        <button onclick="filterDiscover('recreational')" id="btn-discover-recreational" class="discover-tab-btn bg-orange-100 text-orange-700 px-6 py-3 rounded-2xl font-black text-base shadow transition hover:bg-orange-200">🎡 Fun & Activities</button>
+    </div>
+
+    <!-- CARDS GRID -->
+    <div id="discover-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- ── CULTURAL ── -->
+        <div class="discover-card cultural bg-white rounded-3xl overflow-hidden shadow-md border-4 border-rose-200">
+            <div class="card-img h-48 overflow-hidden"><img src="https://upload.wikimedia.org/wikipedia/commons/a/ad/Ksar-ouled-soltane.jpg" class="w-full h-full object-cover" alt="Ksar Ouled Soltane" onerror="this.src='https://placehold.co/600x400/ffe4e6/be123c?text=Ksar+Ouled+Soltane'"></div>
+            <div class="p-5 space-y-2">
+                <span class="bg-rose-100 text-rose-700 text-xs font-black px-3 py-1 rounded-full">🏰 Ancient Berber Fortress</span>
+                <h3 class="text-lg font-black text-slate-900">Ksar Ouled Soltane — A Living Castle</h3>
+                <p class="text-slate-600 text-sm font-bold leading-relaxed">This incredible 600-year-old fortress near Tataouine was built by Berber nomads to store their grain and protect their food. Its beautiful four-story stone rooms (ghorfas) form a jaw-dropping courtyard!</p>
+            </div>
+        </div>
+
+        <div class="discover-card cultural bg-white rounded-3xl overflow-hidden shadow-md border-4 border-rose-200">
+            <div class="card-img h-48 overflow-hidden"><img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Matmata%2C_Tunisia.JPG" class="w-full h-full object-cover" alt="Matmata" onerror="this.src='https://placehold.co/600x400/ffe4e6/be123c?text=Matmata'"></div>
+            <div class="p-5 space-y-2">
+                <span class="bg-rose-100 text-rose-700 text-xs font-black px-3 py-1 rounded-full">🌀 Underground Berber Homes</span>
+                <h3 class="text-lg font-black text-slate-900">Matmata — The Star Wars Village</h3>
+                <p class="text-slate-600 text-sm font-bold leading-relaxed">The Berber people of Matmata dug their homes underground to escape the desert heat! These amazing cave houses were filmed as Luke Skywalker's home in Star Wars. You can still sleep in one today!</p>
+            </div>
+        </div>
+
+        <div class="discover-card cultural bg-white rounded-3xl overflow-hidden shadow-md border-4 border-rose-200">
+            <div class="card-img h-48 overflow-hidden"><img src="https://upload.wikimedia.org/wikipedia/commons/e/ea/Alleys_of_the_Medina_of_Tozeur_by_night.jpg" class="w-full h-full object-cover" alt="Tozeur Medina" onerror="this.src='https://placehold.co/600x400/ffe4e6/be123c?text=Tozeur+Medina'"></div>
+            <div class="p-5 space-y-2">
+                <span class="bg-rose-100 text-rose-700 text-xs font-black px-3 py-1 rounded-full">🧱 Traditional Brick Architecture</span>
+                <h3 class="text-lg font-black text-slate-900">Tozeur Old Medina — Patterns in Clay</h3>
+                <p class="text-slate-600 text-sm font-bold leading-relaxed">Tozeur's ancient medina is famous for its unique yellow brick buildings decorated with beautiful geometric patterns. No two walls look the same! The city was built over 1,000 years ago by Arab settlers in the oasis.</p>
+            </div>
+        </div>
+
+        <div class="discover-card cultural bg-white rounded-3xl overflow-hidden shadow-md border-4 border-rose-200">
+            <div class="card-img h-48 overflow-hidden"><img src="https://upload.wikimedia.org/wikipedia/commons/a/a8/Ksar_Chenini.JPG" class="w-full h-full object-cover" alt="Chenini" onerror="this.src='https://placehold.co/600x400/ffe4e6/be123c?text=Chenini'"></div>
+            <div class="p-5 space-y-2">
+                <span class="bg-rose-100 text-rose-700 text-xs font-black px-3 py-1 rounded-full">⛰️ Berber Mountain Village</span>
+                <h3 class="text-lg font-black text-slate-900">Chenini — Village in the Sky</h3>
+                <p class="text-slate-600 text-sm font-bold leading-relaxed">Perched on top of a dramatic rocky hill near Tataouine, Chenini is one of Tunisia's most stunning villages. Its white mosque and cave homes have been there for over 800 years, looking out over the vast Saharan landscape!</p>
+            </div>
+        </div>
+
+        <div class="discover-card cultural bg-white rounded-3xl overflow-hidden shadow-md border-4 border-rose-200">
+            <div class="card-img h-48 overflow-hidden"><img src="https://upload.wikimedia.org/wikipedia/commons/4/46/Houmt_el_souk.jpg" class="w-full h-full object-cover" alt="Djerba" onerror="this.src='https://placehold.co/600x400/ffe4e6/be123c?text=Djerba'"></div>
+            <div class="p-5 space-y-2">
+                <span class="bg-rose-100 text-rose-700 text-xs font-black px-3 py-1 rounded-full">🏝️ Island of Heritage</span>
+                <h3 class="text-lg font-black text-slate-900">Djerba — The Island of Dreams</h3>
+                <p class="text-slate-600 text-sm font-bold leading-relaxed">The biggest island in North Africa has been inhabited for over 3,000 years! Its medina has ancient mosques, a famous Jewish synagogue, traditional pottery markets, and colorful street art. Connected to the mainland by a Roman causeway!</p>
+            </div>
+        </div>
+
+        <!-- ── ECOLOGICAL ── -->
+        <div class="discover-card ecological hidden bg-white rounded-3xl overflow-hidden shadow-md border-4 border-amber-200">
+            <div class="card-img h-48 overflow-hidden"><img src="https://upload.wikimedia.org/wikipedia/commons/8/85/Chott_el_Djerid.JPG" class="w-full h-full object-cover" alt="Chott el-Jerid" onerror="this.src='https://placehold.co/600x400/fef3c7/b45309?text=Chott+el-Jerid'"></div>
+            <div class="p-5 space-y-2">
+                <span class="bg-amber-100 text-amber-700 text-xs font-black px-3 py-1 rounded-full">🪞 Giant Salt Lake</span>
+                <h3 class="text-lg font-black text-slate-900">Chott el-Jerid — The Mirror Desert</h3>
+                <p class="text-slate-600 text-sm font-bold leading-relaxed">This giant salt lake is as big as a small country! In summer it dries up and creates dazzling mirages that look like water. In winter, flamingos wade in its shallow edges. The road crossing it looks like it leads into infinity!</p>
+            </div>
+        </div>
+
+        <div class="discover-card ecological hidden bg-white rounded-3xl overflow-hidden shadow-md border-4 border-amber-200">
+            <div class="card-img h-48 overflow-hidden"><img src="https://upload.wikimedia.org/wikipedia/commons/6/64/Tunisia_10-12_-_057_-_Douz_and_the_Festival_of_the_Sahara_%286609279957%29.jpg" class="w-full h-full object-cover" alt="Sahara Desert" onerror="this.src='https://placehold.co/600x400/fef3c7/b45309?text=Sahara'"></div>
+            <div class="p-5 space-y-2">
+                <span class="bg-amber-100 text-amber-700 text-xs font-black px-3 py-1 rounded-full">🏜️ Golden Sand Dunes</span>
+                <h3 class="text-lg font-black text-slate-900">The Sahara Desert — Sea of Gold</h3>
+                <p class="text-slate-600 text-sm font-bold leading-relaxed">In Douz you can touch the edge of the world's largest desert! Ride friendly camels, sandboard down golden dunes, and meet the adorable Fennec Fox with its enormous ears. Watching the sunset here is a memory for life!</p>
+            </div>
+        </div>
+
+        <div class="discover-card ecological hidden bg-white rounded-3xl overflow-hidden shadow-md border-4 border-amber-200">
+            <div class="card-img h-48 overflow-hidden"><img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Tunisia-4073_-_Tamerza_Oasis_%287849982218%29.jpg" class="w-full h-full object-cover" alt="Tamerza Oasis" onerror="this.src='https://placehold.co/600x400/fef3c7/b45309?text=Tamerza'"></div>
+            <div class="p-5 space-y-2">
+                <span class="bg-amber-100 text-amber-700 text-xs font-black px-3 py-1 rounded-full">💧 Waterfall in the Desert</span>
+                <h3 class="text-lg font-black text-slate-900">Tamerza & Chebika — Secret Oases</h3>
+                <p class="text-slate-600 text-sm font-bold leading-relaxed">Hidden in the Atlas mountain foothills, these magical oases have real waterfalls in the middle of the desert! Colorful birds, lush palms, and crystal-clear springs create a paradise that feels impossible — but it's real!</p>
+            </div>
+        </div>
+
+        <div class="discover-card ecological hidden bg-white rounded-3xl overflow-hidden shadow-md border-4 border-amber-200">
+            <div class="card-img h-48 overflow-hidden"><img src="https://upload.wikimedia.org/wikipedia/commons/e/ef/Parc_national_de_Bouhedma_7.jpg" class="w-full h-full object-cover" alt="Bou Hedma" onerror="this.src='https://placehold.co/600x400/fef3c7/b45309?text=Bou-Hedma'"></div>
+            <div class="p-5 space-y-2">
+                <span class="bg-amber-100 text-amber-700 text-xs font-black px-3 py-1 rounded-full">🦌 Rare Desert Animals</span>
+                <h3 class="text-lg font-black text-slate-900">Bou Hedma National Park — Tunisia's Safari</h3>
+                <p class="text-slate-600 text-sm font-bold leading-relaxed">Did you know Tunisia has its own safari? Bou Hedma is home to giant ostriches, rare slender-horned gazelles (Rhim), and wild oryxes roaming freely among ancient acacia trees — the oldest trees in North Africa!</p>
+            </div>
+        </div>
+
+        <div class="discover-card ecological hidden bg-white rounded-3xl overflow-hidden shadow-md border-4 border-amber-200">
+            <div class="card-img h-48 overflow-hidden"><img src="https://upload.wikimedia.org/wikipedia/commons/9/9d/Flying_Flamingos_in_Halk_El_Menjel_Lake_%28Sousse_Governorate_-_Tunisia%29_1.jpg" class="w-full h-full object-cover" alt="Djerba Flamingos" onerror="this.src='https://placehold.co/600x400/fef3c7/b45309?text=Djerba+Flamingos'"></div>
+            <div class="p-5 space-y-2">
+                <span class="bg-amber-100 text-amber-700 text-xs font-black px-3 py-1 rounded-full">🦩 Pink Flamingo Lagoon</span>
+                <h3 class="text-lg font-black text-slate-900">Djerba Lagoon — Where Flamingos Dance</h3>
+                <p class="text-slate-600 text-sm font-bold leading-relaxed">The shallow lagoons around Djerba island are home to hundreds of pink flamingos! These elegant birds arrive from Europe every year to feed on tiny shrimp that give them their famous pink color. A truly magical sight!</p>
+            </div>
+        </div>
+
+        <!-- ── RECREATIONAL ── -->
+        <div class="discover-card recreational hidden bg-white rounded-3xl overflow-hidden shadow-md border-4 border-orange-200">
+            <div class="card-img h-48 overflow-hidden"><img src="https://upload.wikimedia.org/wikipedia/commons/c/cd/On_the_camel%2C_Douz%2C_Tunisia%2C_oct_2010_-_panoramio.jpg" class="w-full h-full object-cover" alt="Camel Ride" onerror="this.src='https://placehold.co/600x400/fff7ed/c2410c?text=Camel+Rides'"></div>
+            <div class="p-5 space-y-2">
+                <span class="bg-orange-100 text-orange-700 text-xs font-black px-3 py-1 rounded-full">🐫 Desert Adventure</span>
+                <h3 class="text-lg font-black text-slate-900">Camel Rides in Douz — Desert Style!</h3>
+                <p class="text-slate-600 text-sm font-bold leading-relaxed">In Douz, climb aboard a friendly camel and ride into the real Sahara! Camels are gentle, funny animals that sway as they walk. You'll feel like a real desert nomad as you cross the golden dunes with the hot sun above!</p>
+            </div>
+        </div>
+
+        <div class="discover-card recreational hidden bg-white rounded-3xl overflow-hidden shadow-md border-4 border-orange-200">
+            <div class="card-img h-48 overflow-hidden"><img src="https://upload.wikimedia.org/wikipedia/commons/b/bd/Djerba_Explore_Nile_Crocodiles_eating_03.JPG" class="w-full h-full object-cover" alt="Djerba Explore" onerror="this.src='https://placehold.co/600x400/fff7ed/c2410c?text=Djerba+Explore'"></div>
+            <div class="p-5 space-y-2">
+                <span class="bg-orange-100 text-orange-700 text-xs font-black px-3 py-1 rounded-full">🐊 Wildlife Encounter</span>
+                <h3 class="text-lg font-black text-slate-900">Djerba Explore — Crocodiles & Museums!</h3>
+                <p class="text-slate-600 text-sm font-bold leading-relaxed">This amazing park in Djerba has a massive crocodile farm with over 400 Nile crocodiles of all sizes! Plus a fantastic museum showing traditional Tunisian life through life-size reconstructions. Kids absolutely love it!</p>
+            </div>
+        </div>
+
+        <div class="discover-card recreational hidden bg-white rounded-3xl overflow-hidden shadow-md border-4 border-orange-200">
+            <div class="card-img h-48 overflow-hidden"><img src="https://upload.wikimedia.org/wikipedia/commons/5/52/Star_Wars_in_Tunisia_-_Obi-Wan%27s_house.jpg" class="w-full h-full object-cover" alt="Star Wars Trail" onerror="this.src='https://placehold.co/600x400/fff7ed/c2410c?text=Star+Wars+Trail'"></div>
+            <div class="p-5 space-y-2">
+                <span class="bg-orange-100 text-orange-700 text-xs font-black px-3 py-1 rounded-full">⭐ Movie Magic</span>
+                <h3 class="text-lg font-black text-slate-900">Star Wars Trail — Walk on Tatooine!</h3>
+                <p class="text-slate-600 text-sm font-bold leading-relaxed">The planet "Tatooine" in Star Wars was actually filmed in southern Tunisia! Visit Matmata where Luke Skywalker's home was filmed, and Mos Espa set near Tozeur. Stand in the exact spots where the famous scenes were shot!</p>
+            </div>
+        </div>
+
+        <div class="discover-card recreational hidden bg-white rounded-3xl overflow-hidden shadow-md border-4 border-orange-200">
+            <div class="card-img h-48 overflow-hidden"><img src="https://upload.wikimedia.org/wikipedia/commons/d/dc/Beach_at_Djerba.jpg" class="w-full h-full object-cover" alt="Djerba Beaches" onerror="this.src='https://placehold.co/600x400/fff7ed/c2410c?text=Djerba+Beaches'"></div>
+            <div class="p-5 space-y-2">
+                <span class="bg-orange-100 text-orange-700 text-xs font-black px-3 py-1 rounded-full">🏖️ Island Fun</span>
+                <h3 class="text-lg font-black text-slate-900">Djerba Beaches — Crystal-Clear Paradise!</h3>
+                <p class="text-slate-600 text-sm font-bold leading-relaxed">Djerba's beaches have some of the most beautiful turquoise water in the Mediterranean! White sand, warm sea, water parks, banana boats, and pedalos — Djerba is the perfect island holiday destination for families!</p>
+            </div>
+        </div>
+
+        <div class="discover-card recreational hidden bg-white rounded-3xl overflow-hidden shadow-md border-4 border-orange-200">
+            <div class="card-img h-48 overflow-hidden"><img src="https://upload.wikimedia.org/wikipedia/commons/f/f9/Bled_El_Hadhar_valley_in_Tozeur%2C_Tunisia_%28Djerid_Oasis%29.jpg" class="w-full h-full object-cover" alt="Tozeur Dates" onerror="this.src='https://placehold.co/600x400/fff7ed/c2410c?text=Date+Harvest'"></div>
+            <div class="p-5 space-y-2">
+                <span class="bg-orange-100 text-orange-700 text-xs font-black px-3 py-1 rounded-full">🌴 Oasis Experience</span>
+                <h3 class="text-lg font-black text-slate-900">Tozeur Oasis Walk — Date Tasting!</h3>
+                <p class="text-slate-600 text-sm font-bold leading-relaxed">Walk through the magical palm grove of Tozeur — over 200,000 trees! Try the world-famous Deglet Nour dates fresh from the tree, ride a small carriage through the oasis, and watch how farmers harvest dates by climbing the palms!</p>
+            </div>
+        </div>
+
+    </div><!-- end grid -->
+</main>
+
+<!-- FOOTER -->
+<footer class="bg-slate-900 text-white pt-10 pb-6 mt-16 border-t-8 border-yellow-400">
+    <div class="container mx-auto px-4 max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-8 text-center md:text-left">
+        <div><h4 class="text-xl font-black text-yellow-400 mb-2">Southern Tunisia Explorer 🏜️</h4>
+        <p class="text-xs text-slate-400 font-bold">Interactive educational platform for children's tourism in southern Tunisia — Final Project 2026</p></div>
+        <div><h4 class="text-lg font-black text-yellow-400 mb-2">Other Pages</h4>
+        <div class="flex flex-wrap gap-2 justify-center md:justify-start text-xs font-bold">
+            <a href="histoires.html" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-lg transition">📖 Stories</a>
+            <a href="jeux.html"      class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-lg transition">🎮 Play</a>
+            <a href="cuisine.html"   class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-lg transition">🍲 Cuisine</a>
+            <a href="parents.html"   class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-lg transition">👪 Parents</a>
+        </div></div>
+    </div>
+    <div class="text-center text-xs text-slate-500 font-bold mt-6 pt-4 border-t border-slate-800">All rights reserved &copy; 2026</div>
+</footer>
+
+<script src="js/app.js"></script>
+<script>
+function filterDiscover(cat) {
+    SoundFX.playClick();
+    document.querySelectorAll('.discover-card').forEach(c => {
+        c.classList.toggle('hidden', !c.classList.contains(cat));
+    });
+    document.querySelectorAll('.discover-tab-btn').forEach(b => {
+        b.className = b.id.includes(cat)
+            ? 'discover-tab-btn ' + (cat==='cultural'?'bg-rose-500 text-white':cat==='ecological'?'bg-amber-500 text-white':'bg-orange-500 text-white') + ' px-6 py-3 rounded-2xl font-black text-base shadow transition'
+            : 'discover-tab-btn bg-slate-100 text-slate-600 px-6 py-3 rounded-2xl font-black text-base shadow transition hover:bg-slate-200';
+    });
+}
+filterDiscover('cultural');
+</script>
+</body>
+</html>

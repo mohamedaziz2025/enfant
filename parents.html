@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parents' Guide | Southern Tunisia Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>tailwind.config={theme:{extend:{fontFamily:{nunito:['Nunito','sans-serif']},colors:{tunisRed:'#E10600',skyBlue:'#38BDF8',sunnyYellow:'#FBBF24',jungleGreen:'#34D399'},animation:{'bounce-slow':'bounce 3s infinite','pulse-slow':'pulse 4s cubic-bezier(0.4,0,0.6,1) infinite'},keyframes:{wiggle:{'0%,100%':{transform:'rotate(-3deg)'},'50%':{transform:'rotate(3deg)'}}}}}}
+    </script>
+    <style>
+        body{font-family:'Nunito',sans-serif;background:#FFF8F0}
+        ::-webkit-scrollbar{width:10px}::-webkit-scrollbar-thumb{background:#F97316;border-radius:5px}
+        .confetti{position:fixed;width:10px;height:10px;border-radius:50%;pointer-events:none}
+        @keyframes confettiFall{0%{transform:translateY(-50px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(360deg);opacity:0}}
+        .custom-toast{animation:slideUp .3s ease}
+        @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+        .nav-scroll{overflow-x:auto;scrollbar-width:none}
+        .nav-scroll::-webkit-scrollbar{display:none}
+        .tip-card{transition:transform .25s ease,box-shadow .25s ease}
+        .tip-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.1)}
+    </style>
+</head>
+<body class="overflow-x-hidden text-slate-800">
+
+<!-- AVATAR MODAL -->
+<div id="avatar-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 max-w-2xl w-full border-8 border-yellow-400 shadow-2xl relative overflow-y-auto max-h-[90vh]">
+        <h2 class="text-2xl font-black text-center text-slate-900 mb-4">Choose Your Companion 🏜️</h2>
+        <div class="mb-5"><input type="text" id="avatar-input-name" class="w-full px-4 py-3 rounded-xl border-4 border-sky-400 text-lg font-bold outline-none focus:border-yellow-400 transition" placeholder="Write your name..."></div>
+        <div class="grid grid-cols-4 gap-3 mb-6">
+            <div onclick="selectAvatarOption('hannibal')" id="opt-hannibal" class="avatar-option border-4 border-slate-200 rounded-2xl p-3 cursor-pointer text-center hover:bg-sky-50 transition"><div class="text-4xl mb-1">🛡️</div><div class="font-black text-xs">Hannibal</div></div>
+            <div onclick="selectAvatarOption('jasmine')"  id="opt-jasmine"  class="avatar-option border-4 border-slate-200 rounded-2xl p-3 cursor-pointer text-center hover:bg-sky-50 transition"><div class="text-4xl mb-1">🌸</div><div class="font-black text-xs">Jasmine</div></div>
+            <div onclick="selectAvatarOption('fennec')"   id="opt-fennec"   class="avatar-option border-4 border-slate-200 rounded-2xl p-3 cursor-pointer text-center hover:bg-sky-50 transition"><div class="text-4xl mb-1">🦊</div><div class="font-black text-xs">Fennec</div></div>
+            <div onclick="selectAvatarOption('sailor')"   id="opt-sailor"   class="avatar-option border-4 border-slate-200 rounded-2xl p-3 cursor-pointer text-center hover:bg-sky-50 transition"><div class="text-4xl mb-1">⛵</div><div class="font-black text-xs">Sailor</div></div>
+        </div>
+        <div class="flex justify-center"><button onclick="confirmAvatarSelection()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xl px-10 py-3 rounded-2xl shadow-lg border-b-4 border-emerald-700 transition">Let's Go! 🚀</button></div>
+    </div>
+</div>
+
+<!-- HEADER -->
+<header class="bg-gradient-to-b from-amber-500 to-orange-400 pb-6 relative overflow-hidden shadow-lg border-b-4 border-dashed border-amber-400">
+    <div class="absolute top-4 right-6 text-white text-4xl opacity-40 animate-bounce-slow">☀️</div>
+    <div class="container mx-auto px-4 pt-4 flex flex-col md:flex-row justify-between items-center relative z-10">
+        <a href="index.html" class="flex items-center gap-3">
+            <div class="bg-white p-3 rounded-full shadow-md border-4 border-yellow-400 hover:scale-110 transition"><span class="text-3xl">🏜️</span></div>
+            <div><h1 class="text-2xl font-black text-white drop-shadow">Southern Tunisia Explorer</h1>
+            <p class="text-sm font-bold text-amber-100">Discover the Desert South 🌍</p></div>
+        </a>
+        <div class="flex flex-wrap items-center justify-center gap-3 mt-4 md:mt-0">
+            <div class="bg-amber-100 border-2 border-amber-400 px-4 py-2 rounded-full flex items-center gap-2 shadow-inner"><span class="text-xl">⭐</span><div><div class="text-xs text-amber-800 font-bold">Points</div><div class="text-lg font-black text-amber-600" id="header-points">0</div></div></div>
+            <div id="level-badge" class="border-2 px-3 py-1 rounded-full text-xs font-black shadow">🌱 Beginner Explorer</div>
+            <div id="avatar-status" class="bg-white border-2 border-teal-400 px-4 py-1 rounded-full flex items-center gap-2 shadow cursor-pointer" onclick="openAvatarSelector()"></div>
+            <button onclick="resetAdventure()" class="text-xs bg-red-100 hover:bg-red-200 text-red-700 px-2.5 py-1.5 rounded-lg border border-red-300 font-bold transition"><i class="fas fa-redo-alt mr-1"></i> Reset</button>
+        </div>
+    </div>
+    <nav class="container mx-auto px-4 mt-5 relative z-10">
+        <div class="nav-scroll">
+            <div class="flex gap-2 justify-start md:justify-center bg-white/80 p-2 rounded-2xl shadow border-2 border-white min-w-max md:mx-auto">
+                <a id="nav-home"     href="index.html"     class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">🏠 Home</a>
+                <a id="nav-discover" href="decouvrir.html" class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">🧭 Discover</a>
+                <a id="nav-stories"  href="histoires.html" class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">📖 Stories</a>
+                <a id="nav-play"     href="jeux.html"      class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">🎮 Play</a>
+                <a id="nav-cuisine"  href="cuisine.html"   class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">🍲 Cuisine</a>
+                <a id="nav-parents"  href="parents.html"   class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">👪 Parents</a>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<main class="container mx-auto px-4 py-8 max-w-6xl space-y-10">
+    <div class="text-center max-w-2xl mx-auto space-y-2">
+        <span class="text-5xl">👪</span>
+        <h2 class="text-3xl font-black text-slate-900">Parents' Guide — Southern Tunisia with Kids</h2>
+        <p class="text-slate-600 font-bold leading-relaxed">Everything you need to plan a safe, fun, and enriching family adventure in the beautiful Tunisian South.</p>
+    </div>
+
+    <!-- TIPS GRID -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div class="tip-card bg-white p-5 rounded-2xl border-4 border-teal-200 shadow space-y-3">
+            <div class="text-3xl">🎒</div>
+            <h4 class="font-black text-teal-800 text-base">Pack a Desert Adventure Kit</h4>
+            <p class="text-xs text-slate-600 font-bold leading-relaxed">Give your child their own small backpack with a toy compass, drawing notebook, and binoculars. When kids feel equipped like real explorers, every visit becomes an exciting mission!</p>
+        </div>
+        <div class="tip-card bg-white p-5 rounded-2xl border-4 border-sky-200 shadow space-y-3">
+            <div class="text-3xl">🌡️</div>
+            <h4 class="font-black text-sky-800 text-base">Desert Heat — Stay Safe!</h4>
+            <p class="text-xs text-slate-600 font-bold leading-relaxed">In summer, the Sahara can reach 45°C. Always carry plenty of water, apply sunscreen every 2 hours, and plan desert activities early morning or after 4pm. A wide-brim hat is essential!</p>
+        </div>
+        <div class="tip-card bg-white p-5 rounded-2xl border-4 border-emerald-200 shadow space-y-3">
+            <div class="text-3xl">⭐</div>
+            <h4 class="font-black text-emerald-800 text-base">The Star Wars Trail</h4>
+            <p class="text-xs text-slate-600 font-bold leading-relaxed">Kids who love Star Wars will be amazed to learn that "Tatooine" is real! Show them the Matmata cave scenes and Mos Espa set near Tozeur before you visit — the excitement will be incredible!</p>
+        </div>
+        <div class="tip-card bg-white p-5 rounded-2xl border-4 border-rose-200 shadow space-y-3">
+            <div class="text-3xl">📸</div>
+            <h4 class="font-black text-rose-800 text-base">The Trip Journal</h4>
+            <p class="text-xs text-slate-600 font-bold leading-relaxed">Give your child a simple camera or phone to photograph what interests them. This encourages careful observation and creates a beautiful personal memory of the trip they'll treasure for years.</p>
+        </div>
+        <div class="tip-card bg-white p-5 rounded-2xl border-4 border-violet-200 shadow space-y-3">
+            <div class="text-3xl">🏕️</div>
+            <h4 class="font-black text-violet-800 text-base">Sleep Under the Stars</h4>
+            <p class="text-xs text-slate-600 font-bold leading-relaxed">Spend one night in a Bedouin desert camp near Douz. The night sky over the Sahara is breathtaking — no light pollution means you can see thousands of stars. Kids absolutely never forget this experience!</p>
+        </div>
+        <div class="tip-card bg-white p-5 rounded-2xl border-4 border-amber-200 shadow space-y-3">
+            <div class="text-3xl">🌿</div>
+            <h4 class="font-black text-amber-800 text-base">Teach Desert Respect</h4>
+            <p class="text-xs text-slate-600 font-bold leading-relaxed">The Sahara is fragile. Teach children never to disturb animals, leave litter, or pick plants. Explain that the Fennec Fox's burrow is its home — we are guests in the desert, and guests show respect!</p>
+        </div>
+    </div>
+
+    <!-- SEASONAL GUIDE -->
+    <div class="bg-white rounded-3xl p-6 md:p-8 border-4 border-sky-200 shadow space-y-6">
+        <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">📅 Seasonal Travel Guide for Southern Tunisia</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-blue-50 rounded-2xl p-4 border-2 border-blue-200 space-y-2">
+                <div class="text-2xl">❄️</div>
+                <h4 class="font-black text-blue-800">Winter (Dec–Feb) ⭐ BEST</h4>
+                <ul class="text-xs text-blue-700 font-bold space-y-1">
+                    <li>✅ Douz Sahara Festival (Dec)</li>
+                    <li>✅ Camel rides (cool weather!)</li>
+                    <li>✅ Tozeur oasis walks</li>
+                    <li>✅ Flamingos at Djerba lagoon</li>
+                </ul>
+            </div>
+            <div class="bg-emerald-50 rounded-2xl p-4 border-2 border-emerald-200 space-y-2">
+                <div class="text-2xl">🌸</div>
+                <h4 class="font-black text-emerald-800">Spring (Mar–May)</h4>
+                <ul class="text-xs text-emerald-700 font-bold space-y-1">
+                    <li>✅ Tamerza/Chebika waterfalls</li>
+                    <li>✅ Bou Hedma safari</li>
+                    <li>✅ Ksour visits (mild heat)</li>
+                    <li>✅ Wildflower desert blooms</li>
+                </ul>
+            </div>
+            <div class="bg-orange-50 rounded-2xl p-4 border-2 border-orange-200 space-y-2">
+                <div class="text-2xl">☀️</div>
+                <h4 class="font-black text-orange-800">Summer (Jun–Aug) HOT!</h4>
+                <ul class="text-xs text-orange-700 font-bold space-y-1">
+                    <li>✅ Djerba beaches & water parks</li>
+                    <li>✅ Djerba Explore Park</li>
+                    <li>⚠️ Avoid desert midday heat</li>
+                    <li>✅ Evening Tozeur medina walks</li>
+                </ul>
+            </div>
+            <div class="bg-amber-50 rounded-2xl p-4 border-2 border-amber-200 space-y-2">
+                <div class="text-2xl">🍂</div>
+                <h4 class="font-black text-amber-800">Autumn (Sep–Nov)</h4>
+                <ul class="text-xs text-amber-700 font-bold space-y-1">
+                    <li>✅ Date harvest in Tozeur (Oct)</li>
+                    <li>✅ Comfortable desert treks</li>
+                    <li>✅ Matmata cave houses</li>
+                    <li>✅ Chott el-Jerid reflections</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- PLACES CHECKLIST -->
+    <div class="bg-white p-6 rounded-3xl shadow border-4 border-teal-200 space-y-5">
+        <h3 class="text-xl font-black text-teal-800 flex items-center gap-2"><span>✅</span> Kid-Friendly Places Checklist</h3>
+        <p class="text-xs text-slate-500 font-bold">Tap the places you've visited with your child!</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition"><input type="checkbox" class="w-5 h-5 accent-teal-600 rounded"><span class="font-bold text-slate-700 text-sm">Camel rides in Douz (Sahara)</span></label>
+            <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition"><input type="checkbox" class="w-5 h-5 accent-teal-600 rounded"><span class="font-bold text-slate-700 text-sm">Ksar Ouled Soltane (Tataouine)</span></label>
+            <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition"><input type="checkbox" class="w-5 h-5 accent-teal-600 rounded"><span class="font-bold text-slate-700 text-sm">Tozeur oasis walk & date tasting</span></label>
+            <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition"><input type="checkbox" class="w-5 h-5 accent-teal-600 rounded"><span class="font-bold text-slate-700 text-sm">Chott el-Jerid (salt lake)</span></label>
+            <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition"><input type="checkbox" class="w-5 h-5 accent-teal-600 rounded"><span class="font-bold text-slate-700 text-sm">Matmata underground cave houses</span></label>
+            <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition"><input type="checkbox" class="w-5 h-5 accent-teal-600 rounded"><span class="font-bold text-slate-700 text-sm">Tamerza/Chebika mountain oases</span></label>
+            <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition"><input type="checkbox" class="w-5 h-5 accent-teal-600 rounded"><span class="font-bold text-slate-700 text-sm">Djerba Explore (crocodile park)</span></label>
+            <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition"><input type="checkbox" class="w-5 h-5 accent-teal-600 rounded"><span class="font-bold text-slate-700 text-sm">Bou Hedma National Park (safari)</span></label>
+        </div>
+    </div>
+
+    <!-- RECOMMENDATION FORM -->
+    <div class="bg-gradient-to-br from-teal-50 to-emerald-50 p-6 rounded-3xl border-4 border-teal-400 shadow space-y-5">
+        <h3 class="text-xl font-black text-teal-800 flex items-center gap-2"><span>📬</span> Share Your Recommendation</h3>
+        <p class="text-xs text-slate-600 font-semibold leading-relaxed">Do you know a wonderful family-friendly spot in southern Tunisia that we haven't mentioned? Share it so other families can benefit!</p>
+        <form id="rec-form" onsubmit="submitRec(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-xs font-black text-slate-700 mb-1">Your name:</label>
+                <input type="text" required id="rec-name" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-bold focus:border-teal-400 outline-none" placeholder="First and last name">
+            </div>
+            <div>
+                <label class="block text-xs font-black text-slate-700 mb-1">Suggested place and region:</label>
+                <input type="text" required id="rec-place" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-bold focus:border-teal-400 outline-none" placeholder="e.g. Tataouine — Oued Dekouk Park">
+            </div>
+            <div class="md:col-span-2">
+                <label class="block text-xs font-black text-slate-700 mb-1">Description of child-friendly facilities:</label>
+                <textarea required id="rec-desc" rows="3" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-bold focus:border-teal-400 outline-none" placeholder="e.g. Has a safe play area, family restaurant, shaded picnic zones..."></textarea>
+            </div>
+            <div class="md:col-span-2">
+                <button type="submit" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-black py-2.5 rounded-xl border-b-4 border-teal-800 text-sm transition">
+                    Submit Recommendation 👍
+                </button>
+            </div>
+        </form>
+
+        <div id="rec-list" class="space-y-2">
+            <h4 class="font-black text-teal-900 text-xs border-b pb-1">💡 Community Recommendations:</h4>
+            <div class="p-3 bg-white rounded-xl border text-xs leading-relaxed font-semibold">
+                <span class="font-black text-teal-700">Father Mark (Tozeur):</span> "Phoenix Oasis Park" is fantastic for kids — horse-drawn carriage rides through the palm grove, and the kids can feed the animals!
+            </div>
+            <div class="p-3 bg-white rounded-xl border text-xs leading-relaxed font-semibold">
+                <span class="font-black text-teal-700">Mother Sarah (Djerba):</span> Djerba Explore crocodile farm is absolutely mesmerizing for children — they have feeding shows and the museum section is very educational!
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="bg-slate-900 text-white pt-10 pb-6 mt-16 border-t-8 border-yellow-400">
+    <div class="container mx-auto px-4 max-w-5xl text-center">
+        <h4 class="text-xl font-black text-yellow-400 mb-3">Southern Tunisia Explorer 🏜️</h4>
+        <p class="text-xs text-slate-400 font-bold mb-4">Interactive educational platform for children's tourism in southern Tunisia — Final Year Project 2026</p>
+        <div class="flex flex-wrap gap-2 justify-center text-xs font-bold">
+            <a href="index.html"     class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-lg transition">🏠 Home</a>
+            <a href="decouvrir.html" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-lg transition">🧭 Discover</a>
+            <a href="histoires.html" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-lg transition">📖 Stories</a>
+            <a href="jeux.html"      class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-lg transition">🎮 Play</a>
+            <a href="cuisine.html"   class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-lg transition">🍲 Cuisine</a>
+        </div>
+        <p class="text-xs text-slate-500 mt-4">&copy; 2026 — All rights reserved</p>
+    </div>
+</footer>
+
+<script src="js/app.js"></script>
+<script>
+function submitRec(e) {
+    e.preventDefault();
+    SoundFX.playSuccess();
+    const name  = document.getElementById('rec-name').value;
+    const place = document.getElementById('rec-place').value;
+    const desc  = document.getElementById('rec-desc').value;
+    const list  = document.getElementById('rec-list');
+    const div   = document.createElement('div');
+    div.className = 'p-3 bg-emerald-50 rounded-xl border border-emerald-300 text-xs leading-relaxed font-semibold';
+    div.innerHTML = `<span class="font-black text-emerald-700">${name} (${place}):</span> ${desc}`;
+    list.appendChild(div);
+    document.getElementById('rec-form').reset();
+    addPoints(10);
+    showCustomMessage('📬 Thank you for sharing! Your recommendation has been added. +10 points!');
+}
+</script>
+</body>
+</html>

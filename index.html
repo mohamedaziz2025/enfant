@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home | Southern Tunisia Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: { extend: {
+                fontFamily: { nunito: ['Nunito','sans-serif'] },
+                colors: { tunisRed:'#E10600', skyBlue:'#38BDF8', sunnyYellow:'#FBBF24', jungleGreen:'#34D399', seaBlue:'#0284C7' },
+                animation: { 'bounce-slow':'bounce 3s infinite', 'wiggle':'wiggle 1s ease-in-out infinite', 'pulse-slow':'pulse 4s cubic-bezier(0.4,0,0.6,1) infinite' },
+                keyframes: { wiggle: { '0%,100%':{ transform:'rotate(-3deg)' }, '50%':{ transform:'rotate(3deg)' } } }
+            }}
+        }
+    </script>
+    <style>
+        body { font-family:'Nunito',sans-serif; background:#FFF8F0; }
+        ::-webkit-scrollbar { width:10px } ::-webkit-scrollbar-track { background:#FFF8F0 } ::-webkit-scrollbar-thumb { background:#F97316; border-radius:5px }
+        .confetti { position:fixed; width:10px; height:10px; border-radius:50%; pointer-events:none; }
+        @keyframes confettiFall { 0%{transform:translateY(-50px) rotate(0deg);opacity:1} 100%{transform:translateY(100vh) rotate(360deg);opacity:0} }
+        .custom-toast { animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+        .nav-scroll { overflow-x:auto; scrollbar-width:none; }
+        .nav-scroll::-webkit-scrollbar { display:none }
+        .progress-bar { transition: width 1s cubic-bezier(.4,0,.2,1); }
+        .region-card-btn { transition: all 0.25s ease; }
+        .region-card-btn:hover { transform: translateY(-3px); }
+    </style>
+</head>
+<body class="overflow-x-hidden text-slate-800 selection:bg-yellow-200">
+
+<!-- AVATAR MODAL -->
+<div id="avatar-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-3xl p-6 md:p-8 max-w-2xl w-full border-8 border-yellow-400 shadow-2xl relative overflow-y-auto max-h-[90vh]">
+        <div class="absolute -top-6 -right-6 text-6xl -rotate-12 animate-bounce-slow">🏜️</div>
+        <div class="absolute -bottom-6 -left-6 text-6xl rotate-12">🐫</div>
+        <h2 class="text-2xl md:text-3xl font-black text-center text-slate-900 mb-2">Welcome, Young Explorer! Choose Your Companion 🇹🇳</h2>
+        <p class="text-center text-slate-600 font-bold mb-6">This character will represent you throughout your adventure and help you earn rare badges!</p>
+        <div class="mb-6">
+            <label class="block font-black text-slate-800 mb-2">Write your explorer name here:</label>
+            <input type="text" id="avatar-input-name" class="w-full px-4 py-3 rounded-xl border-4 border-sky-400 text-lg font-bold text-slate-700 outline-none focus:border-yellow-400 transition" placeholder="e.g. Yasmine, Zied, Adam...">
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+            <div onclick="selectAvatarOption('hannibal')" id="opt-hannibal" class="avatar-option border-4 border-slate-200 rounded-2xl p-4 cursor-pointer text-center hover:bg-sky-50 transition transform hover:-translate-y-1">
+                <div class="text-5xl mb-2">🛡️</div><h4 class="font-black text-slate-800 text-sm">Young Hannibal</h4>
+                <span class="text-xs text-slate-500 font-bold">Brave adventurer</span>
+            </div>
+            <div onclick="selectAvatarOption('jasmine')" id="opt-jasmine" class="avatar-option border-4 border-slate-200 rounded-2xl p-4 cursor-pointer text-center hover:bg-sky-50 transition transform hover:-translate-y-1">
+                <div class="text-5xl mb-2">🌸</div><h4 class="font-black text-slate-800 text-sm">Jasmine</h4>
+                <span class="text-xs text-slate-500 font-bold">Smart and kind</span>
+            </div>
+            <div onclick="selectAvatarOption('fennec')" id="opt-fennec" class="avatar-option border-4 border-slate-200 rounded-2xl p-4 cursor-pointer text-center hover:bg-sky-50 transition transform hover:-translate-y-1">
+                <div class="text-5xl mb-2">🦊</div><h4 class="font-black text-slate-800 text-sm">Fennec the Fox</h4>
+                <span class="text-xs text-slate-500 font-bold">Fast desert explorer</span>
+            </div>
+            <div onclick="selectAvatarOption('sailor')" id="opt-sailor" class="avatar-option border-4 border-slate-200 rounded-2xl p-4 cursor-pointer text-center hover:bg-sky-50 transition transform hover:-translate-y-1">
+                <div class="text-5xl mb-2">⛵</div><h4 class="font-black text-slate-800 text-sm">Desert Sailor</h4>
+                <span class="text-xs text-slate-500 font-bold">Loves treasure & travel</span>
+            </div>
+        </div>
+        <div class="flex justify-center">
+            <button onclick="confirmAvatarSelection()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xl px-12 py-4 rounded-2xl shadow-lg border-b-4 border-emerald-700 transition active:scale-95">
+                Start the Adventure! 🚀
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- HEADER -->
+<header class="bg-gradient-to-b from-amber-500 to-orange-400 pb-6 relative overflow-hidden shadow-lg border-b-4 border-dashed border-amber-400">
+    <div class="absolute top-4 right-6 text-white text-4xl opacity-40 animate-bounce-slow">☀️</div>
+    <div class="absolute top-10 left-12 text-white text-5xl opacity-30 animate-pulse-slow">🌵</div>
+    <div class="container mx-auto px-4 pt-4 flex flex-col md:flex-row justify-between items-center relative z-10">
+        <a href="index.html" class="flex items-center gap-3 cursor-pointer">
+            <div class="bg-white p-3 rounded-full shadow-md border-4 border-yellow-400 hover:scale-110 transition">
+                <span class="text-3xl">🏜️</span>
+            </div>
+            <div>
+                <h1 class="text-2xl md:text-3xl font-black text-white drop-shadow">Southern Tunisia Explorer</h1>
+                <p class="text-sm font-bold text-amber-100">Discover the Desert South 🌍 Learn, Play & Explore!</p>
+            </div>
+        </a>
+        <div class="flex flex-wrap items-center justify-center gap-3 mt-4 md:mt-0">
+            <div class="bg-amber-100 border-2 border-amber-400 px-4 py-2 rounded-full flex items-center gap-2 shadow-inner hover:scale-105 transition">
+                <span class="text-xl">⭐</span>
+                <div><div class="text-xs text-amber-800 font-bold">Points</div><div class="text-lg font-black text-amber-600" id="header-points">0</div></div>
+            </div>
+            <div id="level-badge" class="border-2 px-3 py-1 rounded-full text-xs font-black shadow">🌱 Beginner Explorer</div>
+            <div id="avatar-status" class="bg-white border-2 border-teal-400 px-4 py-1 rounded-full flex items-center gap-2 shadow cursor-pointer" onclick="openAvatarSelector()"></div>
+            <button onclick="resetAdventure()" class="text-xs bg-red-100 hover:bg-red-200 text-red-700 px-2.5 py-1.5 rounded-lg border border-red-300 font-bold transition"><i class="fas fa-redo-alt mr-1"></i> Reset</button>
+        </div>
+    </div>
+    <nav class="container mx-auto px-4 mt-5 relative z-10">
+        <div class="nav-scroll">
+            <div class="flex gap-2 justify-start md:justify-center bg-white/80 p-2 rounded-2xl shadow border-2 border-white min-w-max md:mx-auto">
+                <a id="nav-home"     href="index.html"     class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">🏠 Home</a>
+                <a id="nav-discover" href="decouvrir.html" class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">🧭 Discover</a>
+                <a id="nav-stories"  href="histoires.html" class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">📖 Stories</a>
+                <a id="nav-play"     href="jeux.html"      class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">🎮 Play</a>
+                <a id="nav-cuisine"  href="cuisine.html"   class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">🍲 Cuisine</a>
+                <a id="nav-parents"  href="parents.html"   class="nav-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-base transition hover:bg-yellow-100">👪 Parents</a>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<!-- MAIN -->
+<main class="container mx-auto px-4 py-8 max-w-6xl space-y-10">
+
+    <!-- HERO -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center bg-white p-6 md:p-8 rounded-3xl shadow-md border-4 border-amber-200 relative overflow-hidden">
+        <div class="absolute -top-10 -right-10 bg-yellow-100/60 w-48 h-48 rounded-full pointer-events-none"></div>
+        <div class="lg:col-span-7 space-y-4 relative z-10">
+            <span class="bg-orange-100 text-orange-600 font-black text-sm px-4 py-1.5 rounded-full inline-block">🎓 Interactive Children's Tourism Project</span>
+            <h2 class="text-3xl md:text-4xl font-black text-slate-900 leading-tight">
+                Welcome to the Magical South!<br>
+                <span class="text-amber-500">Ready to explore Southern Tunisia?</span>
+            </h2>
+            <p class="text-slate-600 font-semibold leading-relaxed text-lg">Join us on an interactive journey through the golden Sahara, ancient Berber ksour, magical oases, and beautiful Djerba island! Play, learn, and earn explorer badges!</p>
+            <div class="flex flex-wrap gap-3 pt-2">
+                <a href="decouvrir.html" onclick="SoundFX.playClick()" class="bg-yellow-400 hover:bg-yellow-300 text-slate-900 font-black text-base px-7 py-3 rounded-2xl shadow-md border-b-4 border-amber-500 transition">
+                    <i class="fas fa-compass mr-2"></i>Start Exploring
+                </a>
+                <a href="jeux.html" onclick="SoundFX.playClick()" class="bg-amber-500 hover:bg-amber-400 text-white font-black text-base px-7 py-3 rounded-2xl shadow-md border-b-4 border-amber-700 transition">
+                    <i class="fas fa-gamepad mr-2"></i>Play & Challenge
+                </a>
+            </div>
+        </div>
+        <!-- Progress Panel -->
+        <div class="lg:col-span-5 space-y-4">
+            <div class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-5 border-4 border-amber-200 space-y-4">
+                <h3 class="font-black text-slate-900 text-center text-lg">🗓️ Your Journey So Far</h3>
+                <div id="home-level-display" class="text-center space-y-2">
+                    <div class="text-4xl" id="home-level-emoji">🌱</div>
+                    <div class="font-black text-slate-800" id="home-level-label">Beginner Explorer</div>
+                    <div class="bg-slate-200 rounded-full h-4 overflow-hidden">
+                        <div id="home-level-bar" class="progress-bar h-full bg-gradient-to-r from-amber-400 to-orange-400 rounded-full" style="width:0%"></div>
+                    </div>
+                    <div class="text-xs text-slate-500 font-bold" id="home-level-next"></div>
+                </div>
+                <div class="grid grid-cols-3 gap-2 text-center text-xs font-black">
+                    <div class="bg-white rounded-xl p-2 border border-amber-200">
+                        <div class="text-2xl" id="stat-points-icon">⭐</div>
+                        <div class="text-amber-600" id="stat-points">0</div>
+                        <div class="text-slate-500">Points</div>
+                    </div>
+                    <div class="bg-white rounded-xl p-2 border border-amber-200">
+                        <div class="text-2xl">🏅</div>
+                        <div class="text-purple-600" id="stat-badges">0</div>
+                        <div class="text-slate-500">Badges</div>
+                    </div>
+                    <div class="bg-white rounded-xl p-2 border border-amber-200">
+                        <div class="text-2xl">🗺️</div>
+                        <div class="text-sky-600" id="stat-regions">0/4</div>
+                        <div class="text-slate-500">Regions</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- INTERACTIVE MAP -->
+    <div class="bg-white p-6 md:p-8 rounded-3xl shadow-md border-4 border-yellow-200 space-y-6">
+        <div class="text-center max-w-2xl mx-auto space-y-2">
+            <span class="text-4xl">🗺️</span>
+            <h3 class="text-2xl font-black text-slate-900">Interactive Map of Southern Tunisia</h3>
+            <p class="text-slate-600 font-bold">Click on any region to discover its amazing treasures and earn points!</p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div class="lg:col-span-5 flex justify-center">
+                <div class="relative w-72 h-[480px] bg-amber-50 rounded-3xl border-4 border-amber-200 shadow-inner p-4 flex items-center justify-center">
+                    <div class="absolute top-3 left-3 text-xs font-black text-amber-700 opacity-70">Northern Sahara Gates 🌵</div>
+                    <div class="absolute bottom-14 right-3 text-xs font-black text-orange-600 opacity-70">Deep Desert & Island 🏜️</div>
+                    <svg viewBox="0 0 200 450" class="w-full h-full drop-shadow-md">
+                        <path id="map-path-gafsa" d="M100,50 C130,40 160,80 150,110 C120,130 90,120 70,100 C60,80 70,60 100,50Z"
+                            class="fill-teal-300 hover:fill-teal-400 stroke-teal-600 stroke-2 cursor-pointer transition duration-200"
+                            onclick="selectMapRegion('gafsa')"></path>
+                        <path id="map-path-tozeur" d="M150,110 C170,120 180,160 170,190 C150,210 130,210 120,170 C115,140 130,120 150,110Z"
+                            class="fill-yellow-300 hover:fill-yellow-400 stroke-amber-500 stroke-2 cursor-pointer transition duration-200"
+                            onclick="selectMapRegion('tozeur')"></path>
+                        <path id="map-path-douz" d="M70,100 C90,120 120,170 110,210 C90,230 60,210 50,170 C40,130 50,110 70,100Z"
+                            class="fill-amber-300 hover:fill-amber-400 stroke-amber-600 stroke-2 cursor-pointer transition duration-200"
+                            onclick="selectMapRegion('douz')"></path>
+                        <path id="map-path-tataouine" d="M110,210 C130,210 160,250 150,300 C140,360 80,420 50,420 C50,380 60,320 80,270 C90,240 100,220 110,210Z"
+                            class="fill-orange-200 hover:fill-orange-300 stroke-orange-500 stroke-2 cursor-pointer transition duration-200"
+                            onclick="selectMapRegion('tataouine')"></path>
+                        <text x="82" y="82"  font-size="20" class="pointer-events-none select-none">🌵</text>
+                        <text x="142" y="158" font-size="20" class="pointer-events-none select-none">🌴</text>
+                        <text x="62"  y="160" font-size="20" class="pointer-events-none select-none">🐫</text>
+                        <text x="90"  y="320" font-size="24" class="pointer-events-none select-none">🏰</text>
+                    </svg>
+                    <div class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-3 py-1 rounded-full whitespace-nowrap shadow animate-bounce">
+                        <i class="fas fa-hand-pointer mr-1"></i> Click to Explore!
+                    </div>
+                </div>
+            </div>
+            <div class="lg:col-span-7">
+                <div id="region-card" class="bg-amber-50 border-4 border-amber-300 rounded-2xl p-6 space-y-4 shadow">
+                    <p class="text-slate-500 font-bold text-center">👆 Click on the map to see region details</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QUICK LINKS -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a href="decouvrir.html" class="bg-white rounded-2xl p-5 text-center border-4 border-rose-200 shadow hover:shadow-lg hover:-translate-y-1 transition group">
+            <div class="text-4xl mb-2 group-hover:scale-110 transition">🏰</div>
+            <div class="font-black text-slate-800">Discover</div>
+            <div class="text-xs text-slate-500 font-bold">Sites & Nature</div>
+        </a>
+        <a href="histoires.html" class="bg-white rounded-2xl p-5 text-center border-4 border-purple-200 shadow hover:shadow-lg hover:-translate-y-1 transition group">
+            <div class="text-4xl mb-2 group-hover:scale-110 transition">📖</div>
+            <div class="font-black text-slate-800">Stories</div>
+            <div class="text-xs text-slate-500 font-bold">Desert tales</div>
+        </a>
+        <a href="jeux.html" class="bg-white rounded-2xl p-5 text-center border-4 border-sky-200 shadow hover:shadow-lg hover:-translate-y-1 transition group">
+            <div class="text-4xl mb-2 group-hover:scale-110 transition">🎮</div>
+            <div class="font-black text-slate-800">Play</div>
+            <div class="text-xs text-slate-500 font-bold">Quizzes & puzzles</div>
+        </a>
+        <a href="cuisine.html" class="bg-white rounded-2xl p-5 text-center border-4 border-orange-200 shadow hover:shadow-lg hover:-translate-y-1 transition group">
+            <div class="text-4xl mb-2 group-hover:scale-110 transition">🍲</div>
+            <div class="font-black text-slate-800">Cuisine</div>
+            <div class="text-xs text-slate-500 font-bold">Tasty southern dishes</div>
+        </a>
+    </div>
+
+    <!-- BADGES -->
+    <div class="bg-white p-6 md:p-8 rounded-3xl shadow-md border-4 border-emerald-200 text-center">
+        <h3 class="text-2xl font-black text-slate-900 mb-2">Explorer Badges of Southern Tunisia 🏆</h3>
+        <p class="text-slate-600 font-bold mb-6">Earn rare badges by completing challenges and quizzes!</p>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div id="badge-carthage" class="badge-item opacity-40 bg-slate-50 border-2 border-dashed border-slate-300 rounded-2xl p-4 flex flex-col items-center transition">
+                <div class="text-4xl mb-2 grayscale-element grayscale">🏰</div><h4 class="font-black text-slate-800 text-xs">Ksar Discoverer</h4><p class="text-[10px] text-slate-500">Complete History Quiz</p>
+            </div>
+            <div id="badge-desert" class="badge-item opacity-40 bg-slate-50 border-2 border-dashed border-slate-300 rounded-2xl p-4 flex flex-col items-center transition">
+                <div class="text-4xl mb-2 grayscale-element grayscale">🐫</div><h4 class="font-black text-slate-800 text-xs">Sahara Explorer</h4><p class="text-[10px] text-slate-500">Complete Safari Quiz</p>
+            </div>
+            <div id="badge-explorer" class="badge-item opacity-40 bg-slate-50 border-2 border-dashed border-slate-300 rounded-2xl p-4 flex flex-col items-center transition">
+                <div class="text-4xl mb-2 grayscale-element grayscale">🗺️</div><h4 class="font-black text-slate-800 text-xs">Southern Traveler</h4><p class="text-[10px] text-slate-500">Explore all 4 regions</p>
+            </div>
+            <div id="badge-artist" class="badge-item opacity-40 bg-slate-50 border-2 border-dashed border-slate-300 rounded-2xl p-4 flex flex-col items-center transition">
+                <div class="text-4xl mb-2 grayscale-element grayscale">🎨</div><h4 class="font-black text-slate-800 text-xs">Digital Artist</h4><p class="text-[10px] text-slate-500">Use the coloring book</p>
+            </div>
+            <div id="badge-storyteller" class="badge-item opacity-40 bg-slate-50 border-2 border-dashed border-slate-300 rounded-2xl p-4 flex flex-col items-center transition">
+                <div class="text-4xl mb-2 grayscale-element grayscale">📖</div><h4 class="font-black text-slate-800 text-xs">Story Master</h4><p class="text-[10px] text-slate-500">Read all 3 stories</p>
+            </div>
+            <div id="badge-chef" class="badge-item opacity-40 bg-slate-50 border-2 border-dashed border-slate-300 rounded-2xl p-4 flex flex-col items-center transition">
+                <div class="text-4xl mb-2 grayscale-element grayscale">🍲</div><h4 class="font-black text-slate-800 text-xs">Little Chef</h4><p class="text-[10px] text-slate-500">Explore 3 recipes</p>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="bg-slate-900 text-white pt-10 pb-6 mt-16 border-t-8 border-yellow-400">
+    <div class="container mx-auto px-4 max-w-6xl grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+        <div class="space-y-3">
+            <h4 class="text-xl font-black text-yellow-400">Southern Tunisia Explorer 🏜️</h4>
+            <p class="text-xs text-slate-400 font-bold leading-relaxed">An interactive educational platform to promote children's tourism in southern Tunisia — Final Project 2026.</p>
+        </div>
+        <div class="space-y-2">
+            <h4 class="text-lg font-black text-yellow-400">Platform Pages</h4>
+            <ul class="text-xs text-slate-400 font-bold space-y-1.5">
+                <li><a href="index.html"     class="hover:text-amber-400 transition">🏠 Home</a></li>
+                <li><a href="decouvrir.html" class="hover:text-amber-400 transition">🧭 Discover the South</a></li>
+                <li><a href="histoires.html" class="hover:text-amber-400 transition">📖 Stories & Tales</a></li>
+                <li><a href="jeux.html"      class="hover:text-amber-400 transition">🎮 Play & Challenge</a></li>
+                <li><a href="cuisine.html"   class="hover:text-amber-400 transition">🍲 Southern Cuisine</a></li>
+                <li><a href="parents.html"   class="hover:text-amber-400 transition">👪 Parents' Guide</a></li>
+            </ul>
+        </div>
+        <div class="space-y-2">
+            <h4 class="text-lg font-black text-yellow-400">Project Info 🎓</h4>
+            <p class="text-xs text-slate-400 font-bold">"Developing Children's Tourism in Southern Tunisia Through Interactive Platforms"</p>
+            <p class="text-xs text-slate-400 font-bold">Final Year Project — Class of 2026 🇹🇳</p>
+        </div>
+    </div>
+    <div class="text-center text-xs text-slate-500 font-bold mt-8 pt-4 border-t border-slate-800">
+        All rights reserved &copy; 2026 — Designed with love for the beautiful Tunisian South
+    </div>
+</footer>
+
+<script src="js/app.js"></script>
+<script>
+const regionDetails = {
+    gafsa: {
+        title: '🌵 Gafsa Region — Ancient Oases & Roman Heritage',
+        img: 'https://upload.wikimedia.org/wikipedia/commons/8/85/Chott_el_Djerid.JPG',
+        text: 'Gafsa is the northern gateway to southern Tunisia! It\'s home to 2,000-year-old Roman swimming pools still filled with natural spring water, beautiful mountain oases, and the famous Gafsa phosphate mines. The region is also known for its delicious dates and rich Berber traditions.',
+        tips: '💡 Don\'t miss the Roman Pools (Piscines Romaines) — ancient swimming baths still in use today!'
+    },
+    tozeur: {
+        title: '🌴 Tozeur & Chott el-Jerid — Land of Palms & Mirages',
+        img: 'https://upload.wikimedia.org/wikipedia/commons/f/f9/Bled_El_Hadhar_valley_in_Tozeur%2C_Tunisia_%28Djerid_Oasis%29.jpg',
+        text: 'Tozeur is surrounded by over 200,000 palm trees! The giant salt lake Chott el-Jerid glitters like a mirror and creates magical mirages. Nearby mountain oases of Chebika and Tamerza hide secret waterfalls in the desert. The old medina has beautiful traditional brick patterns.',
+        tips: '💡 Taste the world-famous Deglet Nour dates from Tozeur — they\'re called the "Queen of Dates"!'
+    },
+    douz: {
+        title: '🐫 Douz — Gateway to the Sahara Desert',
+        img: 'https://upload.wikimedia.org/wikipedia/commons/6/64/Tunisia_10-12_-_057_-_Douz_and_the_Festival_of_the_Sahara_%286609279957%29.jpg',
+        text: 'Douz is called the "Gateway to the Sahara"! Golden sand dunes stretch as far as the eye can see. You can ride friendly camels into the desert, meet the tiny Fennec Fox with its giant ears, watch a breathtaking sunset over the dunes, and visit the exciting International Sahara Festival every December!',
+        tips: '💡 The International Sahara Festival in Douz features camel racing, Bedouin music, and amazing culture!'
+    },
+    tataouine: {
+        title: '🏰 Tataouine & Djerba — Berber Ksour & Island Paradise',
+        img: 'https://upload.wikimedia.org/wikipedia/commons/a/ad/Ksar-ouled-soltane.jpg',
+        text: 'In Tataouine, ancient Berber ksour (fortress granaries) stand dramatically on hilltops. Matmata has incredible underground cave houses — you might recognize them from Star Wars movies! And beautiful Djerba island has white sandy beaches, a crocodile park, and traditional crafts markets.',
+        tips: '💡 Ksar Ouled Soltane is one of the most beautiful ancient fortresses in the world — a must-see!'
+    }
+};
+
+const exploredSet = new Set(AppState.exploredRegions);
+
+function selectMapRegion(key) {
+    SoundFX.playClick();
+    const d = regionDetails[key];
+    const card = document.getElementById('region-card');
+    card.innerHTML = `
+        <img src="${d.img}" class="w-full h-40 object-cover rounded-xl mb-4" alt="${d.title}" onerror="this.src='https://picsum.photos/seed/${key}123/700/300'">
+        <div class="flex justify-between items-start gap-2 mb-2">
+            <h4 class="text-xl font-black text-slate-900">${d.title}</h4>
+            <span class="text-2xl animate-bounce-slow">✨</span>
+        </div>
+        <p class="text-slate-700 text-sm leading-relaxed font-bold mb-3">${d.text}</p>
+        <div class="p-3 bg-amber-50 rounded-xl border-l-4 border-amber-400 text-xs font-bold mb-3">${d.tips}</div>
+        <div class="flex justify-between items-center">
+            <span class="text-xs text-amber-800 font-bold bg-amber-100 px-3 py-1 rounded-full">+ 5 Discovery Points!</span>
+            <a href="decouvrir.html" onclick="SoundFX.playClick()" class="text-xs font-black bg-white border border-slate-300 hover:bg-slate-50 px-4 py-1.5 rounded-lg transition shadow">
+                View Details <i class="fas fa-arrow-right ml-1"></i>
+            </a>
+        </div>
+    `;
+    card.className = 'bg-amber-50 border-4 border-amber-300 rounded-2xl p-4 space-y-2 shadow transition duration-300';
+
+    if (!exploredSet.has(key)) {
+        exploredSet.add(key);
+        markRegionExplored(key);
+        addPoints(5);
+        document.getElementById('stat-regions').innerText = exploredSet.size + '/4';
+        if (exploredSet.size === 4) {
+            awardBadge('explorer');
+        }
+    }
+}
+
+function updateHomeStats() {
+    const pts = AppState.points;
+    const lv  = getLevel(pts);
+    document.getElementById('stat-points').innerText  = pts;
+    document.getElementById('stat-badges').innerText  = AppState.badges.length;
+    document.getElementById('stat-regions').innerText = AppState.exploredRegions.length + '/4';
+    document.getElementById('home-level-emoji').innerText = lv.emoji;
+    document.getElementById('home-level-label').innerText = lv.label;
+    document.getElementById('home-level-bar').style.width  = lv.pct + '%';
+    if (lv.pct < 100) {
+        document.getElementById('home-level-next').innerText = `Progress: ${lv.pct}% towards next level`;
+    } else {
+        document.getElementById('home-level-next').innerText = '🎉 You reached the highest level!';
+    }
+}
+
+window.addEventListener('DOMContentLoaded', () => { updateHomeStats(); });
+</script>
+</body>
+</html>

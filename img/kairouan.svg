@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+  <defs>
+    <linearGradient id="skyK" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1A3A1A"/>
+      <stop offset="60%" stop-color="#2D6A2D"/>
+      <stop offset="100%" stop-color="#7CB87C"/>
+    </linearGradient>
+    <linearGradient id="groundK" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#D4B483"/>
+      <stop offset="100%" stop-color="#C4A060"/>
+    </linearGradient>
+  </defs>
+  <!-- Sky with Islamic green -->
+  <rect width="600" height="400" fill="url(#skyK)"/>
+  <!-- Stars/crescent -->
+  <circle cx="480" cy="55" r="22" fill="#FFD700" opacity="0.9"/>
+  <circle cx="495" cy="48" r="17" fill="#2D6A2D"/>
+  <!-- Stars -->
+  <polygon points="550,30 553,40 563,40 555,47 558,57 550,51 542,57 545,47 537,40 547,40" fill="#FFD700" opacity="0.8"/>
+  <circle cx="80" cy="40" r="2" fill="#FFD700" opacity="0.7"/>
+  <circle cx="200" cy="20" r="1.5" fill="#FFD700" opacity="0.7"/>
+  <!-- Ground -->
+  <rect x="0" y="310" width="600" height="90" fill="url(#groundK)"/>
+  <!-- City wall -->
+  <rect x="30" y="255" width="540" height="65" fill="#C8A870"/>
+  <!-- Battlements on wall -->
+  <g fill="#B89660">
+    <rect x="30" y="240" width="30" height="20"/><rect x="70" y="240" width="30" height="20"/><rect x="110" y="240" width="30" height="20"/>
+    <rect x="150" y="240" width="30" height="20"/><rect x="190" y="240" width="30" height="20"/>
+    <rect x="380" y="240" width="30" height="20"/><rect x="420" y="240" width="30" height="20"/>
+    <rect x="460" y="240" width="30" height="20"/><rect x="500" y="240" width="30" height="20"/><rect x="540" y="240" width="30" height="20"/>
+  </g>
+  <!-- Main Minaret of Great Mosque -->
+  <rect x="255" y="60" width="90" height="210" fill="#D4B483"/>
+  <rect x="248" y="55" width="104" height="20" fill="#C4A060"/>
+  <!-- Minaret tiers -->
+  <rect x="263" y="100" width="74" height="8" fill="#B89050"/>
+  <rect x="263" y="160" width="74" height="8" fill="#B89050"/>
+  <rect x="263" y="220" width="74" height="8" fill="#B89050"/>
+  <!-- Minaret top -->
+  <rect x="268" y="30" width="64" height="30" fill="#C8A870"/>
+  <rect x="280" y="15" width="40" height="18" fill="#B89060"/>
+  <!-- Crescent on top -->
+  <circle cx="300" cy="10" r="8" fill="#FFD700"/>
+  <circle cx="304" cy="7" r="6" fill="#2D6A2D"/>
+  <!-- Mosque body -->
+  <rect x="70" y="200" width="460" height="120" fill="#D4B483"/>
+  <!-- Mosque door arch -->
+  <path d="M 260 320 L 260 240 Q 260 210 300 210 Q 340 210 340 240 L 340 320 Z" fill="#A08040"/>
+  <path d="M 268 320 L 268 242 Q 268 218 300 218 Q 332 218 332 242 L 332 320 Z" fill="#7A5C20"/>
+  <!-- Decorative arches on mosque -->
+  <path d="M 90 320 L 90 270 Q 90 250 110 250 Q 130 250 130 270 L 130 320" stroke="#B89050" stroke-width="3" fill="none"/>
+  <path d="M 140 320 L 140 270 Q 140 250 160 250 Q 180 250 180 270 L 180 320" stroke="#B89050" stroke-width="3" fill="none"/>
+  <path d="M 420 320 L 420 270 Q 420 250 440 250 Q 460 250 460 270 L 460 320" stroke="#B89050" stroke-width="3" fill="none"/>
+  <path d="M 470 320 L 470 270 Q 470 250 490 250 Q 510 250 510 270 L 510 320" stroke="#B89050" stroke-width="3" fill="none"/>
+  <!-- Palm trees -->
+  <rect x="30" y="250" width="6" height="60" fill="#8B6914"/>
+  <ellipse cx="33" cy="245" rx="18" ry="30" fill="#228B22"/>
+  <rect x="560" y="250" width="6" height="60" fill="#8B6914"/>
+  <ellipse cx="563" cy="245" rx="18" ry="30" fill="#228B22"/>
+  <!-- Label -->
+  <rect x="155" y="355" width="290" height="36" rx="8" fill="#1A3A00" opacity="0.85"/>
+  <text x="300" y="379" text-anchor="middle" font-family="Cairo, Arial" font-size="18" fill="#FFD700" font-weight="bold">القيروان - عقبة بن نافع</text>
+</svg>
